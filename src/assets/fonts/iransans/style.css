@@ -1,0 +1,23 @@
+
+
+@font-face {
+    font-family: 'iransans';
+    src: url('IRANSansWebFaNum-Medium.eot');
+    src: url('IRANSansWebFaNum-Medium.eot?#iefix') format('embedded-opentype'),
+        url('IRANSansWebFaNum-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'iransans1';
+    src: url('IRANsansbold.ttf');
+    font-style: normal;
+
+}
+body{
+    font-family:iransans1 !important;
+    font-size: 17px !important;
+    font-weight: 700;
+
+}
