@@ -62,6 +62,7 @@ export class DoctorprofileComponent implements OnInit {
 
       this._service.getpac().subscribe(p => {
         this.paclist = p;
+
       });
       this._labReq.getlistitem('1').subscribe(res => {
         this.listdrug = res;
@@ -106,7 +107,9 @@ export class DoctorprofileComponent implements OnInit {
         this.serchlist = [];
       }
       if (key != '' ) {
-        const f = item.name ? item.name.toLowerCase().substring(0, key.length) : '';
+        const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length): '';
+        // alert(f);
+        // tslint:disable-next-line:triple-equals
         if (key === f) {
           this.serchlist.push(item)
 
@@ -176,44 +179,45 @@ export class DoctorprofileComponent implements OnInit {
     this.router.navigate(['/DoctorDashboard/add_drug_nos']);
   }
   onSubmit() {
-    console.log(this.profileform.value.name);
-    if (this.type === 2) {
-      this._ser.create_fav(this.profileform.value.name, this.type).subscribe( p => {
-        this._ser.gae_fav(2).subscribe( h => {
-          this.itemset = [];
-          this.favdrug = h['items'];
-          // tslint:disable-next-line:no-shadowed-variable
-          this.favdrug.forEach( p => {
-            const  content = {
-              'id': p['id'],
-              'favename': p['favoriteName'],
-              'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
-            };
-            this.itemset.push(content);
-          })
-          console.log('dddddd', this.itemset)
+    if (this.profileform.value.name != '') {
+      if (this.type === 2) {
+        this._ser.create_fav(this.profileform.value.name, this.type).subscribe( p => {
+          this._ser.gae_fav(2).subscribe( h => {
+            this.itemset = [];
+            this.favdrug = h['items'];
+            // tslint:disable-next-line:no-shadowed-variable
+            this.favdrug.forEach( p => {
+              const  content = {
+                'id': p['id'],
+                'favename': p['favoriteName'],
+                'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
+              };
+              this.itemset.push(content);
+            })
+            console.log('dddddd', this.itemset)
+          });
         });
-      });
-    } else {
-      this._ser.create_fav(this.profileform.value.name, this.type).subscribe( p => {
-        this._ser.gae_fav(1).subscribe( h => {
-          this.itemset = [];
-          this.favdrug = h['items'];
-          // tslint:disable-next-line:no-shadowed-variable
-          this.favdrug.forEach( p => {
-            console.log('ppppppppp', p['id'])
-            const  content = {
-              'id': p['id'],
-              'favename': p['favoriteName'],
-              'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
-            };
-            this.itemset.push(content);
-          })
+      } else {
+        this._ser.create_fav(this.profileform.value.name, this.type).subscribe( p => {
+          this._ser.gae_fav(1).subscribe( h => {
+            this.itemset = [];
+            this.favdrug = h['items'];
+            // tslint:disable-next-line:no-shadowed-variable
+            this.favdrug.forEach( p => {
+              console.log('ppppppppp', p['id'])
+              const  content = {
+                'id': p['id'],
+                'favename': p['favoriteName'],
+                'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
+              };
+              this.itemset.push(content);
+            })
+          });
         });
-      });
+      }
+      this.profileform.reset();
+      document.getElementById('test').focus();
     }
-    this.profileform.reset();
-    document.getElementById('test').focus();
   }
 
   delete(id: any) {
@@ -286,11 +290,11 @@ export class DoctorprofileComponent implements OnInit {
     this.datafinal.splice(i, 1)
   }
   set_id(id: any) {
-    this.fav_id= id;
+    this.fav_id = id;
     if (this.itemset.length > 0) {
       this.itemset.forEach( p => {
         if (p['res']) {
-          if(p['id'] == this.fav_id) {
+          if (p['id'] == this.fav_id) {
             p['res'].forEach( h => {
               this.datafinal.push(h);
             })

@@ -19,6 +19,7 @@ export class LoginPageComponent {
      errorMassage: any;
      loading: boolean;
      type: any;
+     version: string;
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private _service: LoginServiceService,
@@ -38,6 +39,7 @@ export class LoginPageComponent {
 
     // tslint:disable-next-line:use-lifecycle-interface
     ngOnInit() {
+        this.version=this.i.config.version;
         localStorage.clear();
         localStorage.removeItem('conf');
         localStorage.removeItem('page');

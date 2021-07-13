@@ -171,10 +171,10 @@ export class LaboratoryRequestComponent implements OnInit {
         this.serchlist = [];
       }
       if (key != '' ) {
-        const f = item.displayName ? item.displayName.toLowerCase().indexOf(key) : '';
+        const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length): '';
         // alert(f);
           // tslint:disable-next-line:triple-equals
-        if (f != -1) {
+        if (key === f) {
           this.serchlist.push(item)
 
         } else {

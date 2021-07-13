@@ -152,7 +152,8 @@ export class DoctorDashboardComponent implements OnInit {
     console.log('piiiii', this.i.config.drug_mode);
     this.localStorageService.removeItem('item')
     this._service.getsalamatseting().subscribe( p => {
-      this.res = p['item']['setting_Json'];
+
+      this.res = p['item']['setting_Json'] ? p['item']['setting_Json'] : '';
       // p['item']['setting_Json'];
       this.respars = JSON.parse(this.res);
       localStorage.setItem('pass', this.respars.password);

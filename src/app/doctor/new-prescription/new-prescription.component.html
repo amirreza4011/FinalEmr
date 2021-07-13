@@ -143,9 +143,9 @@
                 <mat-checkbox *ngIf="ischek"  checked="checked" (change)="SetTerminology($event)">
                 &nbsp;&nbsp;
             </mat-checkbox>
-                BRAND   <mat-checkbox  (change)="call($event)">
+<!--                BRAND   <mat-checkbox  (change)="call($event)">-->
 
-            </mat-checkbox>
+<!--            </mat-checkbox>-->
             </div>
             <div *ngIf="drug_mode=='E'" style="display: flex;text-align: left;height: auto;font-weight: bold;margin-left: 30px;margin-top: 6px">
                 BRAND   <mat-checkbox  (change)="call($event)">
@@ -686,7 +686,7 @@
         <h5 style="text-align: right">مهر و امضای پزشک :...........</h5>
     </div>
     <div class="col-11" style="display: flex;padding: 10px;background-color: whitesmoke">
-        <div class="col-4" *ngIf="ressenddata !== 'no'  "  style="text-align: center;
+        <div class="col-4" *ngIf="ressenddata !== 'no' || salamatcode || sepashid  "  style="text-align: center;
     font-family: 'iransans';
     font-weight: 700;
     font-size: 16px;
@@ -721,4 +721,5 @@
     </div>
 
 </div>
+
 
