@@ -60,6 +60,7 @@ export class HomePageComponent implements OnInit {
 
   }
  async  ngOnInit() {
+      this.mozmenlist=[];
      this._service.getdetailpation(localStorage.getItem('encounterID')).subscribe(p => {
          const cust = {
              'id': 1,
@@ -104,9 +105,7 @@ export class HomePageComponent implements OnInit {
 
       }
     }));
-     if (this.customerobj['patientID'] === undefined) {
-         this.router.navigate(['/DoctorDashboard/patientList']);
-     }
+
   }
 
   get_citizen_user() {

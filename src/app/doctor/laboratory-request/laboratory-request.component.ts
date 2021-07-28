@@ -11,6 +11,9 @@ import {SalamatserviceService} from '../../services/salamatservice.service';
 import {ApiconfigserviceService} from '../../service/apiconfigservice.service';
 import {ProfileseviceService} from '../../services/profilesevice.service';
 import {Web_API_Service_Requset_Items} from '../../classes/web_API_Service_Requset_Items'
+import {HospitalService} from '../../services/hospital/hospital.service';
+import {isObservable} from 'rxjs/internal-compatibility';
+import {HttpClient} from '@angular/common/http';
 
 
 
@@ -24,10 +27,16 @@ export class Country {
 })
 
 export class LaboratoryRequestComponent implements OnInit {
+    printOK = false
     loinC_Code = new Array()
     SendData = new Array()
     expiryDate = '';
     dateObject1 = ''
+    persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g]
+    arabicNumbers  = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g]
+    day = new Date();
+    Date1: Date
+    today = new Date().toLocaleDateString('fa-IR')
      mess: any;
     printValid = false
      favdrug: any;
@@ -36,12 +45,6 @@ export class LaboratoryRequestComponent implements OnInit {
      status: any;
      data_get: any;
      data: any;
-    @ViewChild('input', { static: false })
-    set input(element: ElementRef<HTMLInputElement>) {
-        if (element) {
-            element.nativeElement.focus()
-        }
-    }
   labform: FormGroup;
   customers: any;
   stateHistory = null;
@@ -50,7 +53,7 @@ export class LaboratoryRequestComponent implements OnInit {
   testName = '';
   myControl = new FormControl();
   serchlist = new Array();
-  listdrug: any[];
+  listdrug =new Array();
   name: any = [];
   value = '';
   messg: any;
@@ -64,11 +67,16 @@ export class LaboratoryRequestComponent implements OnInit {
    detail: any;
    loading: boolean;
    url: any;
+    d: any
+    hospital = ''
 
-  private customerobj: any;
+   customerobj: any;
   private labfav:  Array<any> = [];
     messgshow: any;
     messag: any;
+     temp: any;
+     idm: any;
+     list_lab_master = new Array();
   constructor(
       private modalService: NgbModal,
       private _labReq: LabReqService,
@@ -77,7 +85,9 @@ export class LaboratoryRequestComponent implements OnInit {
       private fb: FormBuilder,
       private  _salamatservice: SalamatserviceService,
       private  i: ApiconfigserviceService,
-      private _ser: ProfileseviceService
+      private _ser: ProfileseviceService,
+      private _serviceh: HospitalService,
+      private  http: HttpClient
 
 
   ) {
@@ -116,93 +126,137 @@ export class LaboratoryRequestComponent implements OnInit {
         this.expiryDate = event;
         console.log(this.expiryDate)
     }
+    fixNumbers = function (str: any) {
+        if (typeof str === 'string') {
+            for ( let i = 0; i < 10; i++) {
+                str = str.replace(this.persianNumbers[i], i).replace(this.arabicNumbers[i], i);
+            }
+        }
+        return str;
+    };
     ngOnInit() {
+        this.list_lab_master=null;
+        this.listdrug=null;
+       this.get_list_lab();
 
-     // this.getlist_lab();
+       this._serviceh.getAll().subscribe(res => {
+           this.hospital = res.hospitalName
+       });
+      this.Date1 = new Date();
+      this.Date1.setDate(this.Date1.getDate() + 30);
+
+       this.d = this.Date1.toLocaleDateString('fa-IR')
+       this.d = this.fixNumbers(this.d)
+       const dash = '-';
+       this.d = this.d.replace(/\//g, dash)
+        this.expiryDate = this.d;
+       this.dateObject1 = this.d;
+
+
+
      this._ser.gae_fav(1).subscribe( h => {
          this.favdrug = h['items'];
          console.log(h);
      })
-     document.getElementById('test').focus();
+
 
      this.labform = this.fb.group({
       'labname': ['', Validators.required ],
          'date': ['']
     })
-    this._labReq.getlistitem('1').subscribe(res => {
-      this.listdrug = res;
 
-
-    });
     this.serchlist = null;
     this.show = false;
-    //  this._labReq.servicename().subscribe(res => {
-    //   this.listserves = res;
-    //
-    //     }
-    // );
    this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {
         this.customers = JSON.stringify(state.customer['res']);
         this.customerobj = JSON.parse(this.customers);
       }
     }));
-      // this._labReq.Get_Laboratory_Order_Encounter(this.customerobj['currentEncounterLocationID']).subscribe( p => {
-      //     this.data_get = p;
-      //     console.log(p)
-      //     this.data_get['items'].forEach( u => {
-      //         this.status = u['statusIS'];
-      //         const  y = JSON.parse(u['jsonValue']);
-      //         console.log(y);
-      //         y.forEach( h => {
-      //             this.datafinal.push(h);
-      //             console.log('dataFinal', this.datafinal)
-      //         })
-      //     })
-      // });
-  }
 
-  onSearchChange(event: any) {
+  }
+  get_list_lab() {
+        if(this.i.config.lab_type == 'L'){
+              this._labReq.getlistitem('1').subscribe((res) => {
+                  this.list_lab_master=null;
+                this.listdrug = res;
+                  this.getlist_lab();
+            });
+        }else {
+            this._labReq.get_list_lab_bymaster().subscribe( result => {
+                this.listdrug=null;
+                this.list_lab_master = result;
+                // this.getlist_lab();
+            })
+        }
+  }
+ async onSearchChange(event: any) {
+
     const key = event.target.value;
     this.name = key;
     this.serchlist = [];
-    this.listdrug['items'].forEach(item => {
-      if (key === '') {
-        this.serchlist = [];
-      }
-      if (key != '' ) {
-        const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length): '';
-        // alert(f);
-          // tslint:disable-next-line:triple-equals
-        if (key === f) {
-          this.serchlist.push(item)
-
-        } else {
-
-            const f = item.masterService_NationalCode ? item.masterService_NationalCode.toLowerCase().substring(0, key.length) : '';
-
-            if (key === f) {
-
-                this.serchlist.push(item)
+    if (this.listdrug) {
+        await   this.listdrug['items'].forEach(item => {
+            if (key === '') {
+                this.serchlist = [];
             }
-        }
-      }
-    });
+            if (key != '') {
+                const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length) : '';
+                // alert(f);
+                // tslint:disable-next-line:triple-equals
+                if (key === f) {
+                    this.serchlist.push(item)
+
+                } else {
+
+                    const f = item.masterService_NationalCode ? item.masterService_NationalCode.toLowerCase().substring(0, key.length) : '';
+
+                    if (key === f) {
+
+                        this.serchlist.push(item)
+                    }
+                }
+            }
+        });
+    }
+     if (this.list_lab_master) {
+         await   this.list_lab_master['item'].forEach(item => {
+             if (key === '') {
+                 this.serchlist = [];
+             }
+             if (key != '') {
+                 const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length) : '';
+                 // alert(f);
+                 // tslint:disable-next-line:triple-equals
+                 if (key === f) {
+                     this.serchlist.push(item)
+
+                 } else {
+
+                     const f = item.masterService_NationalCode ? item.masterService_NationalCode.toLowerCase().substring(0, key.length) : '';
+
+                     if (key === f) {
+
+                         this.serchlist.push(item)
+                     }
+                 }
+             }
+         });
+     }
   }
 
   set(d: any) {
-
-
-      console.log('d', d['loinC_Code']);
-      this.loinC_Code.push(d['loinC_Code']);
-      for (const i of this.loinC_Code) {
-          const OBJ = new Web_API_Service_Requset_Items;
-          OBJ.qty = '1',
-              OBJ.service_Terminology_ID = '13',
-              OBJ.service_Code = i
-          this.SendData.push(OBJ)
-          console.log(this.SendData)
-      }
+this.printOK = true
+      // console.log('d', d['loinC_Code']);
+      // this.loinC_Code.push(d['loinC_Code']);
+      // for (const i of this.loinC_Code) {
+      //     const OBJ = new Web_API_Service_Requset_Items;
+      //     OBJ.qty = '1',
+      //         OBJ.service_Terminology_ID = '13',
+      //         OBJ.service_Code = i
+      //     this.SendData.push(OBJ)
+      //     console.log(this.SendData)
+      // }
 
       const  data = {
           'masterServiceID': d['masterServiceID'],
@@ -212,6 +266,7 @@ export class LaboratoryRequestComponent implements OnInit {
           'name': d['name'],
           'national_code' : d['masterService_NationalCode'],
           'displayName' : d['displayName'],
+          'loinc_code': d['loinC_Code']
 
 
       };
@@ -222,14 +277,16 @@ export class LaboratoryRequestComponent implements OnInit {
   save() {
     if (this.datafinal.length > 0) {
       this.loading = true;
-        this._labReq.insertlab(this.datafinal, this.expiryDate, this.SendData).subscribe(p => {
+        this._labReq.insertlab(this.datafinal, this.dateObject1, this.SendData).subscribe(p => {
           console.log('newwwww test', p)
         this.result = p;
           this.loading = false;
         if (p['success'] == true) {
-            this.printValid=true;
+            this.getlist_lab();
+            this.printValid = true;
             this.datafinal = [];
             this.value = '';
+            this.SendData = [];
             this.printValid = true;
         } else {
 
@@ -314,31 +371,34 @@ Get_Last_History_Of_Observation(name: any) {
     saveedit() {
 
         const data = {
-            'id': this.data_get['items'][0]['id'],
-            'encounterLocationID': this.data_get['items'][0]['encounterLocationID'],
-            'codeOf': '',
-            'priorityIX': '',
-            'statusIS': '',
-            'description': '',
-            'orderSheetGroup': '',
+            'id': this.idm,
+            'rayavaran_Loinc_Class_Code': '1',
             'jsonValue': JSON.stringify(this.datafinal),
-            'orderevents': this.datafinal
+            'practitionerID': '',
+            'encounterID': localStorage.getItem('encounterID'),
+            'requestDate': '',
+            'expiryDate': this.dateObject1,
+            'rayavaran_ServiceRequest_Status': '1',
+            'web_API_Service_Requset_Items': this.datafinal
+
         }
+
         this._labReq.Update_Laboratory_Order(data).subscribe( p => {
             this.datafinal = [];
             this.data_get = [];
-            this._labReq.Get_Laboratory_Order_Encounter(this.customerobj['currentEncounterLocationID']).subscribe( p => {
-                this.data_get = p;
-                this.show_messeg('بروزرسانی داده با موفقیت انجام شد', true)
-                this.datafinal = [];
-                this.data_get['items'].forEach( u => {
-                    this.status = u['statusIS'];
-                    const  y = JSON.parse(u['jsonValue']);
-                    y.forEach( h => {
-                        this.datafinal.push(h);
-                    })
-                })
-            });
+            console.log('pppp:', p);
+            // this._labReq.Get_Laboratory_Order_Encounter(this.customerobj['currentEncounterLocationID']).subscribe( p => {
+            //     this.data_get = p;
+            //     this.show_messeg('بروزرسانی داده با موفقیت انجام شد', true)
+            //     this.datafinal = [];
+            //     this.data_get['items'].forEach( u => {
+            //         this.status = u['statusIS'];
+            //         const  y = JSON.parse(u['jsonValue']);
+            //         y.forEach( h => {
+            //             this.datafinal.push(h);
+            //         })
+            //     })
+            // });
         });
     }
 
@@ -351,13 +411,17 @@ Get_Last_History_Of_Observation(name: any) {
         document.getElementById('test').focus();
     }
     add_item_to_list(item: any) {
-      console.log('iteeeeeeeeeeeeeeeeeem', item)
         this._salamatservice.getdetailtest(localStorage.getItem('salamattoken'), localStorage.getItem('salamatusertoken'), localStorage.getItem('citizentoken'), localStorage.getItem('samadcode'), item['national_code']).subscribe(p => {
             this.messg = p['resMessage'];
         });
-        //const persons =  this.datafinal.find(x => x.displayName == item['displayName']);
+         const persons =  this.datafinal.find(x => x.displayName == item['displayName']);
         // tslint:disable-next-line:triple-equals
-        if (1<2) {
+        if (!persons) {
+                const OBJ = new Web_API_Service_Requset_Items;
+                    OBJ.qty = '1',
+                    OBJ.service_Terminology_ID = '13',
+                    OBJ.service_Code = item['loinc_code']
+                this.SendData.push(OBJ)
             this.datafinal.push(item);
             console.log(this.datafinal)
             this.serchlist = null;
@@ -372,24 +436,28 @@ Get_Last_History_Of_Observation(name: any) {
             document.getElementById('test').focus();
         }
     }
-    // listlabratory
-    getlist_lab() {
-       this._labReq.getlab_byenconter().subscribe( p => {
-
+  async  getlist_lab() {
+   await    this._labReq.getlab_byenconter().subscribe( p => {
+           let g = p;
+           this.temp = p;
            if (p['success']) {
+              g = p['items'];
+              if (g.length > 0) {
+                  g.forEach( u => {
 
-               p['items'].forEach( u => {
-                 if (u['rayavaran_Loinc_Class_Code'] == '1') {
-                     u.web_API_Service_Requset_Item_Views.forEach( h => {
-                        const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
-                        this.datafinal.push(content);
-                         this.data = h;
-                     })
+                      this.idm = u['id'];
+                      if (u['rayavaran_Loinc_Class_Code'] == '1') {
+                          this.status = u['rayavaran_ServiceRequest_Status'];
+                          u.web_API_Service_Requset_Item_Views.forEach( h => {
 
+                              const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
+                              this.datafinal.push(content);
+                              this.data = content;
+                          })
+                      }
+                  })
+              }
 
-                 }
-                   console.log('dddd', u)
-               })
            }
        })
     }

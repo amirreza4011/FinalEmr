@@ -43,12 +43,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { CreateuserComponent } from './createuser/createuser.component';
 
 
-
-
-
-
-
-
 @NgModule({
   // tslint:disable-next-line:max-line-length
   declarations: [DoctorDashboardComponent, PrescriptionComponent, PatientInfoComponent, MedicaionsComponent, LaboratoryRequestComponent, DrugRecordComponent, LabRecordComponent, DrugOrderComponent, FilterPipe, SearchPipe, NewPrescriptionComponent, HomePageComponent, ShowResultTableComponent, WaitngPageComponent, RadiologyorderComponent, TasvirComponent, OtherComponent, HistorynosComponent, HistorytestComponent, HistoryobservationComponent, DoctorprofileComponent, AddDrugNosComponent, CreateuserComponent],
@@ -71,7 +65,9 @@ import { CreateuserComponent } from './createuser/createuser.component';
         MatChipsModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        MatExpansionModule
+        MatExpansionModule,
+
+
 
     ]
 

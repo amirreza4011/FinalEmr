@@ -189,4 +189,5 @@ export class DoctorDashboardComponent implements OnInit {
     getdata_user_temp(id: any) {
 
     }
+
 }

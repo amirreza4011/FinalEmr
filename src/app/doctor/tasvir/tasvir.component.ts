@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {SalamatserviceService} from '../../services/salamatservice.service';
 import {ApiconfigserviceService} from '../../service/apiconfigservice.service';
 import {Web_API_Service_Requset_Items} from '../../classes/web_API_Service_Requset_Items';
+import {HospitalService} from '../../services/hospital/hospital.service';
 
 @Component({
   selector: 'app-tasvir',
@@ -15,21 +16,23 @@ import {Web_API_Service_Requset_Items} from '../../classes/web_API_Service_Requs
   styleUrls: ['./tasvir.component.css']
 })
 export class TasvirComponent implements OnInit {
+  printOK=false
    mess: any;
   data_get: any;
   status: any
    status_ta: string;
-  @ViewChild('input', { static: false })
-  set input(element: ElementRef<HTMLInputElement>) {
-    if (element) {
-      element.nativeElement.focus()
-    }
-  }
-  SendData=new Array()
-  loinC_Code=new Array()
+   idm: any;
+   data: { priorityIX: string; displayName: any; qty: string };
+
+  persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g]
+  arabicNumbers  = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g]
+  Date1: Date
+  d: any
+  SendData = new Array()
+  loinC_Code = new Array()
   labform: FormGroup;
-  expiryDate=""
-  dateObject1=""
+  expiryDate = ''
+  dateObject1 = ''
   printValid = false
   customers: any;
   stateHistory = null;
@@ -53,7 +56,8 @@ export class TasvirComponent implements OnInit {
   result1: any;
   detail: any;
   loading: boolean;
-  private customerobj: any;
+  hospital=""
+   customerobj: any;
   private labfav:  Array<any> = [];
   constructor(
       private modalService: NgbModal,
@@ -62,7 +66,9 @@ export class TasvirComponent implements OnInit {
       private router: Router,
       private fb: FormBuilder,
       private  _salamatservice: SalamatserviceService,
-      private  i: ApiconfigserviceService
+      private  i: ApiconfigserviceService,
+      private _serviceh: HospitalService,
+
 
   ) {
     this._labReq.seturl(this.i.config.API_URL)
@@ -94,41 +100,45 @@ export class TasvirComponent implements OnInit {
   obhide() {
     this.show = false;
   }
+  fixNumbers = function (str: any) {
+    if (typeof str === 'string') {
+      for ( let i = 0; i < 10; i++) {
+        str = str.replace(this.persianNumbers[i], i).replace(this.arabicNumbers[i], i);
+      }
+    }
+    return str;
+  };
 
-   ngOnInit() {
-   // this.getlist_lab();
+  async ngOnInit() {
+    this._labReq.getlistitem('2').subscribe(res => {
+      this.listdrug = res;
+      this.getlist_lab();
+
+    });
+    this._serviceh.getAll().subscribe(res => {
+      this.hospital = res.hospitalName
+    });
     this.status_ta = '2.1';
-     // this._labReq.Get_Laboratory_Order_Encounter(this.customerobj['currentEncounterLocationID']).subscribe( p => {
-     //   this.data_get = p;
-     //   console.log(p)
-     //   this.data_get['items'].forEach( u => {
-     //     this.status = u['statusIS'];
-     //     const  y = JSON.parse(u['jsonValue']);
-     //     console.log(y);
-     //     y.forEach( h => {
-     //       this.datafinal.push(h);
-     //       console.log(this.datafinal)
-     //     })
-     //   })
-     // });
+    this.Date1 = new Date();
+    this.Date1.setDate(this.Date1.getDate() + 30);
 
-     console.log(this.datafinal)
-    document.getElementById('test').focus();
-
+    this.d = this.Date1.toLocaleDateString('fa-IR')
+    this.d = this.fixNumbers(this.d)
+    const dash = '-';
+    this.d = this.d.replace(/\//g, dash)
+    this.expiryDate = this.d;
+    this.dateObject1 = this.d;
     this.labform = this.fb.group({
       'labname': ['', Validators.required ],
     })
-    this._labReq.getlistitem('2').subscribe(res => {
-      this.listdrug = res;
-      console.log('data get shode :', res)
-    });
+
     this.serchlist = null;
     this.show = false;
-    this._labReq.servicename().subscribe(res => {
-          this.listserves = res;
-          console.log(res);
-        }
-    );
+    // this._labReq.servicename().subscribe(res => {
+    //       this.listserves = res;
+    //       console.log(res);
+    //     }
+    // );
     this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {
         this.customers = JSON.stringify(state.customer['res']);
@@ -142,9 +152,11 @@ export class TasvirComponent implements OnInit {
     this.serchlist = [];
     this.listdrug['items'].forEach(item => {
 
+
       if (key === '') {
         this.serchlist = [];
       }
+
       if (key != '' ) {
         const f =  item.displayName.toLowerCase().indexOf(key);
         if (f != -1) {
@@ -166,13 +178,15 @@ export class TasvirComponent implements OnInit {
   }
 
   set(d: any) {
-    console.log('dddd',d)
+    this.printOK=true
+
+    console.log('dddd', d)
     this.loinC_Code.push(d['loinC_Code'])
-    for (let i of this.loinC_Code){
-      let OBJ=new Web_API_Service_Requset_Items;
-      OBJ.qty='2',
-          OBJ.service_Terminology_ID="13",
-          OBJ.service_Code=i
+    for (const i of this.loinC_Code) {
+      const OBJ = new Web_API_Service_Requset_Items;
+      OBJ.qty = '2',
+          OBJ.service_Terminology_ID = '13',
+          OBJ.service_Code = i
       this.SendData.push(OBJ)
       console.log(this.SendData)
     }
@@ -217,7 +231,9 @@ export class TasvirComponent implements OnInit {
     if (this.datafinal.length > 0) {
       this.loading = true;
       console.log(this.datafinal)
-      this._labReq.tasvirbardari(this.datafinal,this.expiryDate,this.SendData,2).subscribe(p => {
+      this._labReq.tasvirbardari(this.datafinal, this.dateObject1, this.SendData, 2).subscribe(p => {
+        this.getlist_lab();
+        this.SendData=[]
         this.result = p;
         console.log(p);
         this.loading = false;
@@ -317,8 +333,8 @@ export class TasvirComponent implements OnInit {
     }
   }
   getlist_body_system(code: any) {
-    document.getElementById('div').style.opacity='1'
-    this.serchlistloink=[];
+    document.getElementById('div').style.opacity = '1'
+    this.serchlistloink = [];
     this.listdrug['items'].forEach(item => {
       // console.log('item',item);
           if (item.rayavaran_Loinc_BodySystem_Code == code) {
@@ -331,21 +347,25 @@ export class TasvirComponent implements OnInit {
   // listlabratory
   getlist_lab() {
     this._labReq.getlab_byenconter().subscribe( p => {
-
+      let g;
       if (p['success']) {
+        g = p['items'];
+        if (g.length > 0) {
+          g.forEach( u => {
 
-        p['items'].forEach( u => {
-          if (u['rayavaran_Loinc_Class_Code'] == '2') {
-            u.web_API_Service_Requset_Item_Views.forEach( h => {
-              const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
-            //  this.datafinal.push(content);
-              // this.data = h;
-            })
+            this.idm = u['id'];
+            if (u['rayavaran_Loinc_Class_Code'] == '2') {
+              this.status = u['rayavaran_ServiceRequest_Status'];
+              u.web_API_Service_Requset_Item_Views.forEach( h => {
 
+                const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
+                this.datafinal.push(content);
+                this.data = content;
+              })
+            }
+          })
+        }
 
-          }
-          console.log('dddd', u)
-        })
       }
     })
   }

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ConfigurationService} from './Config/configuration.service';
 import namedata from 'assets/config/config.json';
+import {isObservable} from 'rxjs/internal-compatibility';
+import {Observable} from 'rxjs/observable';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +24,7 @@ export class LoginServiceService {
     this.basurl = url;
    }
   // doctor login function
-  doctor(username: string, password: string) {
+  doctor(username: string, password: string): Observable<any> {
     const data = {
       'username': username,
       'password': password,

@@ -69,7 +69,7 @@
                     <h5  style="font-weight: 400;" class="titleStle"  > مشخصات بیمار</h5>
                 </div>
                 <div class="col-12" style="display: flex">
-                    <div class="col-2" style="padding: 0">
+                    <div *ngIf="customerobj" class="col-2" style="padding: 0">
                         <div style="padding: 6px;display: flex;flex-wrap: wrap">
                             <img alt="بدون تصویر"  style="width: 90px;height: 90px;border-radius: 50%;margin-right: 5px" src="{{url+'/api/EMR/Get_Patient_Picture/'+customerobj['patientID']}}" />
                         </div>

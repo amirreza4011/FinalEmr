@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/observable';
 import namedata from '../../../assets/config/config.json';
+import {promises} from 'fs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,26 +17,15 @@ export class LabReqService {
   private  deletfavurl =     '/api/Laboratory/Delete_Practitioner_Laboratory_Favorite';
   private  getrequsthis =  '/api/Laboratory/Get_Laboratory_Order_Encounter';
   private  get_labhis_url =  '/api/Laboratory/Get_Laboratory_Order_Encounter';
-  private  update_url =  '/api/Laboratory/Update_Laboratory_Order';
+  private  update_url =  '/api/Laboratory/Update_Order';
   private listlab_enconterurl = '/api/Laboratory/Get_Orders_By_Encounter';
+  private master_list_lab_url = '/api/Hospital/ListOfLaboratoryMasterService';
   baseurl: any;
 
 
   constructor( private  http: HttpClient) { }
   seturl(url: any) {
     this.baseurl = url;
-  }
-  servicename(): Observable<any> {
-    const headerDict = {
-      'Authorization': 'Bearer ' + localStorage.getItem('token')
-    }
-    const requestOptions = {
-      headers: new Headers(headerDict),
-    };
-    return   this.http.get<any>(this.baseurl +  this.servicurl, {
-      headers: headerDict
-    });
-
   }
   getlabfav(): Observable<any> {
     const headerDict = {
@@ -45,6 +35,18 @@ export class LabReqService {
       headers: new Headers(headerDict),
     };
     return   this.http.get<any>(this.baseurl + this.favlaburl, {
+      headers: headerDict
+    });
+
+  }
+  get_list_lab_bymaster(): Observable<any> {
+    const headerDict = {
+      'Authorization': 'Bearer ' + localStorage.getItem('token')
+    }
+    const requestOptions = {
+      headers: new Headers(headerDict),
+    };
+    return   this.http.get<any>(this.baseurl + this.master_list_lab_url, {
       headers: headerDict
     });
 
@@ -68,26 +70,7 @@ export class LabReqService {
     const data = {
       'rayavaran_Loinc_Class_Code': '1',
       'encounterID': localStorage.getItem('encounterID'),
-      'expiryDate': date,
-      'jsonvalue': JSON.stringify(list),
-      'web_API_Service_Requset_Items': SendData,
-    }
-    const body = JSON.stringify(data );
-    const headerDict = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer  ' + localStorage.getItem('token')
-    }
-    console.log(body);
-    return this.http.post<any>(this.baseurl + this.saveurl, body, {
-      headers: headerDict
-    })
-  }
-  tasvirbardari(list: any, date: string, SendData: any, type: any): Observable <any> {
-
-    const data = {
-      'rayavaran_Loinc_Class_Code': '2',
-      'encounterID': localStorage.getItem('encounterID'),
-      'expiryDate': date,
+      'expiryDate': date.toString(),
       'jsonvalue': JSON.stringify(list),
       'web_API_Service_Requset_Items': SendData,
     }
@@ -102,10 +85,30 @@ export class LabReqService {
       headers: headerDict
     })
   }
+  tasvirbardari(list: any, date: any, SendData: any, type: any): Observable <any> {
+
+    const data = {
+      'rayavaran_Loinc_Class_Code': '2',
+      'encounterID': localStorage.getItem('encounterID'),
+      'expiryDate': '1400-12-20',
+      'jsonvalue': JSON.stringify(list),
+      'web_API_Service_Requset_Items': SendData,
+    }
+    const body = JSON.stringify(data );
+    console.log('data instance:',body)
+    const headerDict = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer  ' + localStorage.getItem('token')
+    }
+    console.log(body);
+    return this.http.post<any>(this.baseurl + this.saveurl, body, {
+      headers: headerDict
+    })
+  }
 
   getlistitem(id: any): Observable <any> {
     const data = {
-      'rayavaran_Loinc_Class_Code': id,
+      'rayavaran_Loinc_Class_Code': id.toString(),
     }
     const body = JSON.stringify(data );
     console.log(body)
@@ -182,6 +185,7 @@ export class LabReqService {
     })
   }
     Update_Laboratory_Order(item: any) {
+
       const data = {
         'id': item['id'],
         'encounterLocationID': item['encounterLocationID'],
@@ -193,7 +197,8 @@ export class LabReqService {
         'jsonValue': item['jsonValue'],
         'orderevents': item['orderevents']
       }
-    const body = JSON.stringify(data );
+    const body = JSON.stringify(item );
+      console.log('body', body);
     const headerDict = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer  ' + localStorage.getItem('token')
@@ -219,5 +224,6 @@ export class LabReqService {
     return this.http.post<any>(this.baseurl + this.listlab_enconterurl, body, {
       headers: headerDict
     })
+
   }
 }

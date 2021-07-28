@@ -46,6 +46,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   private customerobj: any;
   private resstate: Customer;
    packsurl: any ;
+   state_packs_data: string;
 
   constructor(
     private elementRef: ElementRef,
@@ -99,6 +100,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.packsurl = this.i.config.packs_url;
+    this.state_packs_data=this.i.config.packsdata;
     this.type = '0';
     this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {

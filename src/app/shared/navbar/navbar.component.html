@@ -2,7 +2,7 @@
  Navbar (Header) Starts -->
 <style>
     .hh{
-        color: #36c3b7;
+        color: #b2ff59;
         font-weight: 800;
         font-size: 14px;
         margin-right: 4px;
@@ -45,6 +45,7 @@
             &nbsp;&nbsp;&nbsp;
             <h5 class="hh" *ngIf="customerobj">  | {{customerobj['encounter_Age']}}</h5>
 
+            <h5 class="hh" *ngIf="customerobj">  | {{"کد بیمار"+" :"+customerobj['patientID']}}</h5>
 
 
         </div>

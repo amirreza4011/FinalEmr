@@ -20,12 +20,7 @@ import {HospitalService} from '../../services/hospital/hospital.service';
 })
 export class NewPrescriptionComponent implements OnInit {
     hospital: any;
-    @ViewChild('input', { static: false })
-    set input(element: ElementRef<HTMLInputElement>) {
-        if (element) {
-            element.nativeElement.focus()
-        }
-    }
+
     printValid = false
    generic: any;
    historydrougenconter: any;
@@ -194,7 +189,7 @@ export class NewPrescriptionComponent implements OnInit {
             if (h['success'] == true) {
                 this.printValid = true;
                 this.resedit = h['items'][0];
-                this.status = h['items'] ? h['items'][0]['rayavaran_WardRequest_Status_Code'] : '';
+                this.status = h['items'][0] ? h['items'][0]['rayavaran_WardRequest_Status_Code'] : '';
                 h['items'].forEach( l => {
                     this.historydrougenconter = JSON.parse(l['jsonValue'])
                     const g = JSON.parse(l['jsonValue']);
@@ -208,13 +203,15 @@ export class NewPrescriptionComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
+  async  ngOnInit() {
+
+
         this._serviceh.getAll().subscribe(res => {
             this.hospital = res.hospitalName
         });
         this.prac_name = localStorage.getItem('doc_name')
         this.getdata();
-        document.getElementById('namedrug').focus();
+        // document.getElementById('namedrug').focus();
         this.cheklist = [];
         this.typemodal = 1;
         this.messgshow = false;
@@ -227,7 +224,8 @@ export class NewPrescriptionComponent implements OnInit {
         }
 
       });
-      this._service.getdruglist(this.id1).subscribe( res => {
+
+     this._service.getdruglist(this.id1).subscribe( res => {
         this.listdrug = res;
 
       })
@@ -417,6 +415,7 @@ export class NewPrescriptionComponent implements OnInit {
     this.route1 = value;
   }
   sendsepas() {
+        this.load=true;
       this.listItem.forEach(e => {
           const  d = {
               'Drug_eRxCode': e['drugid'],
@@ -429,10 +428,12 @@ export class NewPrescriptionComponent implements OnInit {
       });
     this._service.sendsepas(this.datasepas , localStorage.getItem('encounterID') , localStorage.getItem('doc_id')).subscribe( p => {
         console.log(p);
+        this.load=false;
         if (p.blnSuccess == true) {
             this.sepashid = p.strHID;
         } else {
             this.error_m = p.strError;
+            this.sepashid= 'خطا در ارسال بسته به سپاس';
         }
     })
   }
@@ -461,7 +462,7 @@ export class NewPrescriptionComponent implements OnInit {
         this.load = false;
         this.datafinal = [];
         if (res['success'] == true) {
-            this.printValid=true;
+            this.printValid = true;
           this.listItem = [];
           this.value = '';
           this.ressenddata = 'yes';
@@ -547,7 +548,7 @@ export class NewPrescriptionComponent implements OnInit {
       });
   }
   onSubmit() {
-    console.log('form data : ',this.signupForm.value);
+    console.log('form data : ', this.signupForm.value);
       this.printValid = true
         let frquncusplit;
         let TNO;
@@ -564,6 +565,18 @@ export class NewPrescriptionComponent implements OnInit {
       }
         // tslint:disable-next-line:prefer-const
         let formdata = this.signupForm.value;
+          // if (formdata['Durationtext']===null){
+          //     formdata['Durationtext']=""
+          // }
+          // if (formdata['Durationselect']===null){
+          //     formdata['Durationselect']=""
+          // }
+          // if (formdata['Dosetext']===null){
+          //     formdata['Dosetext']=""
+          // }
+          // if (formdata['Doseselect']===null){
+          //     formdata['Doseselect']=""
+          // }
         const content = {
 
           'drugname': formdata['drugname'],
@@ -669,7 +682,7 @@ export class NewPrescriptionComponent implements OnInit {
          if (j['success']) {
              this.show_id = true;
              this.listItem = [];
-             this.datafinal=[];
+             this.datafinal = [];
              this.printValid = true;
              this.ressenddata = 'yes';
              this.trakingcode = j['trackingNumber'];
@@ -678,6 +691,11 @@ export class NewPrescriptionComponent implements OnInit {
          }
      })
   }
+    setPrint(){
+  localStorage.setItem('x','1')
+
+
+        }
   add_item_to_list(item: any) {
 
       if (this.editrecord) {

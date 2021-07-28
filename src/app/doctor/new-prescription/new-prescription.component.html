@@ -148,13 +148,13 @@
 <!--            </mat-checkbox>-->
             </div>
             <div *ngIf="drug_mode=='E'" style="display: flex;text-align: left;height: auto;font-weight: bold;margin-left: 30px;margin-top: 6px">
-                BRAND   <mat-checkbox  (change)="call($event)">
+<!--                BRAND   <mat-checkbox  (change)="call($event)">-->
 
-            </mat-checkbox>
+<!--            </mat-checkbox>-->
             </div>
 
             <div class="form-group">
-                <form action="" name="myform" [formGroup]="signupForm" (ngSubmit)="onSubmit()" >
+                <form action="" name="myform" [formGroup]="signupForm" *ngIf="signupForm" (ngSubmit)="onSubmit()" >
 
                     <div class="col-10 d-flex ">
                         <div  class="example-full-width col-11  mt-3">
@@ -286,7 +286,7 @@
 
             </div>
             <div class="col-6" style="text-align: right;">
-                <button [disabled]="printValid===false"  class="btn btn-primary mt-1 ml-1 loading " [printStyle]="{div:{'direction':'rtl'}}"   style="background-color: #f2911b!important; color: white!important;border: none"  [useExistingCss]="true" printSectionId="print-section"  ngxPrint> چاپ نسخه  <i class="ft-printer"></i> </button>
+                <button [disabled]="printValid===false"  class="btn btn-primary mt-1 ml-1 loading " [printStyle]="{div:{'direction':'rtl'}}"   style="background-color: #f2911b!important; color: white!important;border: none" click="setPrint()"  [useExistingCss]="true" printSectionId="print-section"  ngxPrint> چاپ نسخه  <i class="ft-printer"></i> </button>
 
             </div>
 <!--            <div class="col-6" style="text-align: right;">-->
@@ -566,7 +566,7 @@
 
 </ng-template>
 
-<div *ngIf="messgshow" class="col-3 mess" style="margin: 0 auto;background-color: white;height: 90px;z-index: 200;margin-top: -16%;border: 2px solid darkred;color: black;animation-name: example;
+<div *ngIf="messgshow" class="col-3 mess" style="margin: 0 auto;background-color: white;height: 90px;z-index: 200;margin-top: -16%;border: 2px solid darkred;color: black;
   animation-duration: 4s;">
     <p>{{messag}}</p>
     <button class="btn btn-reddit" (click)="closem()" >
@@ -637,11 +637,16 @@
             <div class="col-3" style="text-align: right">
                 کد بیمار      {{customerobj['encounterid']}}
             </div>
+
         </div>
         <div class="col-12 d-flex mt-2">
             <div class="col-3" style="text-align: right">نام پزشک: {{prac_name}}   </div>
-
+            <div class="col-3" style="text-align: right">
+                کد ملی بیمار      {{customerobj['patient_NationalCode']}}
+            </div>
         </div>
+
+
 
     </div>
 
@@ -721,5 +726,4 @@
     </div>
 
 </div>
-
 

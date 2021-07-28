@@ -6,6 +6,8 @@ export  class Config {
     sepas_url: any;
     salamat_url: any;
     salamt_api: boolean;
-    version: string
+    version: string;
+    packsdata:string;
+    lab_type:string
 
 }

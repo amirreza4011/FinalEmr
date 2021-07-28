@@ -99,11 +99,11 @@ export class RadiologyorderComponent implements OnInit {
     });
     this.serchlist = null;
     this.show = false;
-    this._labReq.servicename().subscribe(res => {
-          this.listserves = res;
-          console.log(res);
-        }
-    );
+    // this._labReq.servicename().subscribe(res => {
+    //       this.listserves = res;
+    //       console.log(res);
+    //     }
+    // );
     this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {
         this.customers = JSON.stringify(state.customer['res']);

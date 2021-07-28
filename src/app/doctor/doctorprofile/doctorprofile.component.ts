@@ -69,16 +69,7 @@ export class DoctorprofileComponent implements OnInit {
       });
      this._ser.gae_fav(1).subscribe( h => {
        this.itemset = [];
-      this.favdrug = h['items'];
-      this.favdrug.forEach( p => {
-        console.log('ppppppppp', p['id'])
-        const  content = {
-          'id': p['id'],
-          'favename': p['favoriteName'],
-           'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
-        };
-        this.itemset.push(content);
-      })
+       this.pars(h);
     });
     this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {
@@ -96,8 +87,37 @@ export class DoctorprofileComponent implements OnInit {
         this.listfrequncy = p;
       });
 
-    }
 
+    }
+  async pars(y) {
+    await   y['items'].forEach( item => {
+     let data=[];
+    const  p = JSON.parse(item['jsonValue']) ;
+    p.forEach( h => {
+      console.log('pp:', h)
+      if (h.hasOwnProperty('name')) {
+      const  da = {
+          'displayName': h['name']
+        };
+      data.push(da);
+
+      }
+      if (h.hasOwnProperty('displayName')) {
+      const  da = {
+          'displayName': h['displayName']
+        };
+        data.push(da);
+      }
+    })
+          const content = {
+            'id': item['id'],
+            'favename': item['favoriteName'],
+             'res': data
+          };
+      console.log('data:', content);
+      this.itemset.push(content);
+       });
+   }
   onSearchChange(event: any) {
     const key = event.target.value;
     this.name = key;
@@ -107,7 +127,7 @@ export class DoctorprofileComponent implements OnInit {
         this.serchlist = [];
       }
       if (key != '' ) {
-        const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length): '';
+        const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length) : '';
         // alert(f);
         // tslint:disable-next-line:triple-equals
         if (key === f) {
@@ -126,9 +146,10 @@ export class DoctorprofileComponent implements OnInit {
     });
   }
   set(d: any) {
+    console.log('ddddd', d);
     const  data = {
-      'masterServiceID': d['masterServiceID'],
-      'orderTemplateID': d['orderTemplateID'],
+      'masterServiceID': d['loinC_Code'],
+      'displayName': d['displayName'],
       'qty': '1',
       'priorityIX': '0',
       'name': d['name'],
@@ -136,7 +157,7 @@ export class DoctorprofileComponent implements OnInit {
     this.add_item_to_list(data);
   }
   add_item_to_list(item: any) {
-    const persons =  this.datafinal.find(x => x.name == item['name']);
+    const persons =  this.datafinal.find(x => x.displayName == item['displayName']);
     // tslint:disable-next-line:triple-equals
     if (!persons) {
       this.datafinal.push(item);
@@ -204,7 +225,6 @@ export class DoctorprofileComponent implements OnInit {
             this.favdrug = h['items'];
             // tslint:disable-next-line:no-shadowed-variable
             this.favdrug.forEach( p => {
-              console.log('ppppppppp', p['id'])
               const  content = {
                 'id': p['id'],
                 'favename': p['favoriteName'],

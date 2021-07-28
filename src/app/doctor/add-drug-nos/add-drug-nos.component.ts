@@ -118,15 +118,6 @@ export class AddDrugNosComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.pharmacy = params.get('');
     });
-    // this._servicemozmen.getdetailpation(this.encounterId).subscribe(p => {
-    //   const cust = {
-    //     'id': 1,
-    //     'state': '1',
-    //     'res': p
-    //   };
-    //   this.customersService.add(cust);
-    // });
-
 
     this._service.getpac().subscribe(p => {
       this.paclist = p;
@@ -264,28 +255,64 @@ export class AddDrugNosComponent implements OnInit {
     this.show = 'none';
   }
   onSearchChange(event: any) {
-    const key = event.target.value;
-    this.serchlist = [];
-    // tslint:disable-next-line:label-position
-    // let serch = false;
-    this.listdrug.forEach(item => {
-      if (key === '') {
-        this.serchlist = [];
-      }
-      if (key != '' ) {
-        // console.log('keyyyyyyyyyyy',key);
-        const f = item.name ?  item.name.toLowerCase().substring(0, key.length) : '';
-        if (key === f) {
-          // tslint:disable-next-line:max-line-length
-          this.serchlist.push({'name': item.name, 'id': item.id, 'iscomisin': item.isCommission, 'qty': item.storage_Qty})
-          // serch = true;
 
+    // tslint:disable-next-line:triple-equals
+    if (this.i.config.drug_mode == 'S' ) {
+      const key = event.target.value;
+      this.serchlist = [];
+      // tslint:disable-next-line:label-position
+      // let serch = false;
+      this.listdrug.forEach(item => {
+        if (key === '') {
+          this.serchlist = [];
         }
-      }
-    });
+        // tslint:disable-next-line:triple-equals
+        if (key != '' ) {
+          // console.log('keyyyyyyyyyyy',key);
+          const f = item.name ?  item.name.toLowerCase().substring(0, key.length) : '';
+          if (key === f) {
+            // tslint:disable-next-line:max-line-length
+            this.serchlist.push({'name': item.name, 'id': item.id, 'iscomisin': item.isCommission, 'qty': item.storage_Qty})
+            // serch = true;
 
+          }
+        }
+      });
+    }
+    // tslint:disable-next-line:triple-equals
+    if (this.i.config.drug_mode == 'E' ) {
+      const key = event.target.value;
+      this.serchlist = [];
+      // tslint:disable-next-line:label-position
+      // let serch = false;
+      this.listdrugerx.forEach(item => {
+        if (key === '') {
+          this.serchlist = [];
+        }
+        // tslint:disable-next-line:triple-equals
+        if (key != '' ) {
+          // console.log('keyyyyyyyyyyy',key);
+          const f = item.value ?  item.value.toLowerCase().substring(0, key.length) : '';
+          if (key === f) {
+            // if (this.chek_brand == true) {
+            //   // tslint:disable-next-line:triple-equals
+            //   if (item.isBrand == true) {
+            //     // tslint:disable-next-line:max-line-length
+            //     this.serchlist.push({'name': item.value, 'id': item.code, 'iscomisin': false, 'qty': 1000})
+            //     // serch = true;
+            //   }
+            // } else {
+              // tslint:disable-next-line:max-line-length
+              this.serchlist.push({'name': item.value, 'id': item.code, 'iscomisin': false, 'qty': 1000})
+              // serch = true;
+            // }
 
+          }
+        }
+      });
+    }
   }
+
   set(d: any) {
     this.value = d['name'];
     this.drugid = d['id'];

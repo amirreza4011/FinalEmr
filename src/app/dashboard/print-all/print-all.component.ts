@@ -41,7 +41,7 @@ export class PrintAllComponent implements OnInit {
 
     this.patientService.getAll()
         .subscribe(res => {
-          this.hero = res;
+          this.hero = res['item'];
           this.loding = false;
         });
   }
