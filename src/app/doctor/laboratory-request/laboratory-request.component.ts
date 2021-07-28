@@ -247,16 +247,7 @@ export class LaboratoryRequestComponent implements OnInit {
 
   set(d: any) {
 this.printOK = true
-      // console.log('d', d['loinC_Code']);
-      // this.loinC_Code.push(d['loinC_Code']);
-      // for (const i of this.loinC_Code) {
-      //     const OBJ = new Web_API_Service_Requset_Items;
-      //     OBJ.qty = '1',
-      //         OBJ.service_Terminology_ID = '13',
-      //         OBJ.service_Code = i
-      //     this.SendData.push(OBJ)
-      //     console.log(this.SendData)
-      // }
+
 
       const  data = {
           'masterServiceID': d['masterServiceID'],
