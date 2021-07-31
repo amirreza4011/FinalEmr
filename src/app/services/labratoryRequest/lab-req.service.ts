@@ -184,21 +184,19 @@ export class LabReqService {
       headers: headerDict
     })
   }
-    Update_Laboratory_Order(item: any) {
+    Update_Laboratory_Order(list: any) {
 
-      const data = {
-        'id': item['id'],
-        'encounterLocationID': item['encounterLocationID'],
-        'codeOf': '',
-        'priorityIX': '',
-        'statusIS': '',
-        'description': '',
-        'orderSheetGroup': '',
-        'jsonValue': item['jsonValue'],
-        'orderevents': item['orderevents']
-      }
-    const body = JSON.stringify(item );
-      console.log('body', body);
+
+      // const data = {
+      //   'id': id,
+      //   'rayavaran_Loinc_Class_Code': '1',
+      //   'encounterID': localStorage.getItem('encounterID'),
+      //   'expiryDate': date.toString(),
+      //   'jsonvalue': JSON.stringify(list),
+      //   'web_API_Service_Requset_Items': SendData,
+      // }
+    const body = JSON.stringify(list );
+      console.log('update lab:', body);
     const headerDict = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer  ' + localStorage.getItem('token')

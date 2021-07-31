@@ -62,6 +62,7 @@ export class PatientListServiceService {
             'patientID': ''
         };
         const body = JSON.stringify(data);
+        console.log(body)
         const headers = {'Content-Type': 'application/json'};
         const headerDict = {
             'Content-Type': 'application/json',

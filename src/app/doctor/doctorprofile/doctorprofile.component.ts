@@ -42,7 +42,7 @@ export class DoctorprofileComponent implements OnInit {
   value: any;
    paclist: [];
    fav_id: any;
-
+  list_lab_master = new Array();
   constructor(
       private fb: FormBuilder,
       private customersService: CustomersService,
@@ -59,18 +59,14 @@ export class DoctorprofileComponent implements OnInit {
       this._service.setMyGV(this.i.config.API_URL);
     }
     ngOnInit() {
-
+      this.list_lab_master = null;
+      this.listdrug = null;
       this._service.getpac().subscribe(p => {
         this.paclist = p;
 
       });
-      this._labReq.getlistitem('1').subscribe(res => {
-        this.listdrug = res;
-      });
-     this._ser.gae_fav(1).subscribe( h => {
-       this.itemset = [];
-       this.pars(h);
-    });
+      this.get_list_lab();
+
     this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {
         this.customers = JSON.stringify(state.customer['res']);
@@ -91,73 +87,105 @@ export class DoctorprofileComponent implements OnInit {
     }
   async pars(y) {
     await   y['items'].forEach( item => {
-     let data=[];
-    const  p = JSON.parse(item['jsonValue']) ;
-    p.forEach( h => {
-      console.log('pp:', h)
-      if (h.hasOwnProperty('name')) {
-      const  da = {
-          'displayName': h['name']
-        };
-      data.push(da);
-
-      }
-      if (h.hasOwnProperty('displayName')) {
-      const  da = {
-          'displayName': h['displayName']
-        };
-        data.push(da);
-      }
-    })
-          const content = {
-            'id': item['id'],
-            'favename': item['favoriteName'],
-             'res': data
-          };
-      console.log('data:', content);
+     const data = [];
+    const  p = item['jsonValue'] ? JSON.parse(item['jsonValue']) : '' ;
+    if (p) {
+      // tslint:disable-next-line:no-shadowed-variable
+      const data = [];
+      p.forEach( h => {
+      data.push(h);
+      });
+      const content = {
+        'id': item['id'],
+        'favename': item['favoriteName'],
+        'res': data
+      };
       this.itemset.push(content);
+    }
+
+
        });
    }
-  onSearchChange(event: any) {
+  async onSearchChange(event: any) {
+
     const key = event.target.value;
     this.name = key;
     this.serchlist = [];
-    this.listdrug['items'].forEach(item => {
-      if (key === '') {
-        this.serchlist = [];
-      }
-      if (key != '' ) {
-        const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length) : '';
-        // alert(f);
-        // tslint:disable-next-line:triple-equals
-        if (key === f) {
-          this.serchlist.push(item)
-
-        } else {
-
-          const f = item.masterService_NationalCode ? item.masterService_NationalCode.toLowerCase().substring(0, key.length) : '';
-
+    if (this.listdrug) {
+      await   this.listdrug['items'].forEach(item => {
+        if (key === '') {
+          this.serchlist = [];
+        }
+        if (key != '') {
+          const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length) : '';
+          // alert(f);
+          // tslint:disable-next-line:triple-equals
           if (key === f) {
-
             this.serchlist.push(item)
+
+          } else {
+
+            const f = item.masterService_NationalCode ? item.masterService_NationalCode.toLowerCase().substring(0, key.length) : '';
+
+            if (key === f) {
+
+              this.serchlist.push(item)
+            }
           }
         }
-      }
-    });
+      });
+    }
+    if (this.list_lab_master) {
+      await   this.list_lab_master['item'].forEach(item => {
+        if (key === '') {
+          this.serchlist = [];
+        }
+        if (key != '') {
+          const f = item.displayName ? item.displayName.toLowerCase().substring(0, key.length) : '';
+          // alert(f);
+          // tslint:disable-next-line:triple-equals
+          if (key === f) {
+            this.serchlist.push(item)
+
+          } else {
+
+            const f = item.masterService_NationalCode ? item.masterService_NationalCode.toLowerCase().substring(0, key.length) : '';
+
+            if (key === f) {
+
+              this.serchlist.push(item)
+            }
+          }
+        }
+      });
+    }
   }
   set(d: any) {
-    console.log('ddddd', d);
-    const  data = {
-      'masterServiceID': d['loinC_Code'],
-      'displayName': d['displayName'],
-      'qty': '1',
-      'priorityIX': '0',
-      'name': d['name'],
-    };
-    this.add_item_to_list(data);
+    console.log('ddddd', d['loinC_Code']);
+    if (this.i.config.lab_type == 'M') {
+      const  data = {
+        'masterServiceID': d['masterServiceID'],
+        'orderTemplateID': '9000',
+        'qty': '1',
+        'priorityIX': '0',
+        'name': d['displayName'],
+      };
+      this.add_item_to_list(data);
+    } else {
+      const  data = {
+        'masterServiceID': d['loinC_Code'],
+        'orderTemplateID': '9000',
+        'qty': '1',
+        'priorityIX': '0',
+        'name': d['displayName'],
+      };
+      this.add_item_to_list(data);
+    }
+
+
   }
   add_item_to_list(item: any) {
-    const persons =  this.datafinal.find(x => x.displayName == item['displayName']);
+    const persons =  this.datafinal.find(x => x.name == item['name']);
     // tslint:disable-next-line:triple-equals
     if (!persons) {
       this.datafinal.push(item);
@@ -166,8 +194,6 @@ export class DoctorprofileComponent implements OnInit {
       this.labform.reset();
       document.getElementById('test1').focus();
     } else {
-
-
       this.show_messeg('آزمایش تکراری یافت شد' , true);
       this.serchlist = null;
       this.serchresult = [];
@@ -175,11 +201,33 @@ export class DoctorprofileComponent implements OnInit {
       document.getElementById('test1').focus();
     }
   }
+  get_list_lab() {
+    if (this.i.config.lab_type == 'L') {
+      this._labReq.getlistitem('1').subscribe((res) => {
+        this.list_lab_master = null;
+        this.listdrug = res;
+        this._ser.gae_fav(1).subscribe( h => {
+          this.itemset = [];
+          this.pars(h);
+        });
+      });
+    } else {
+      this._labReq.get_list_lab_bymaster().subscribe( result => {
+        this.listdrug = null;
+        this.list_lab_master = result;
+        this._ser.gae_fav(1).subscribe( h => {
+          this.itemset = [];
+          this.pars(h);
+        });
+      })
+    }
+  }
   show_messeg(mess: any, sh: boolean) {
     this.messgshow = sh;
     this.messag = mess;
   }
   settype(val: any) {
+    alert('type')
     this.type = val;
     this._ser.gae_fav(this.type).subscribe( h => {
       this.itemset = [];
@@ -205,17 +253,18 @@ export class DoctorprofileComponent implements OnInit {
         this._ser.create_fav(this.profileform.value.name, this.type).subscribe( p => {
           this._ser.gae_fav(2).subscribe( h => {
             this.itemset = [];
-            this.favdrug = h['items'];
-            // tslint:disable-next-line:no-shadowed-variable
-            this.favdrug.forEach( p => {
-              const  content = {
-                'id': p['id'],
-                'favename': p['favoriteName'],
-                'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
-              };
-              this.itemset.push(content);
-            })
-            console.log('dddddd', this.itemset)
+            this.pars(h)
+            // this.favdrug = h['items'];
+            // // tslint:disable-next-line:no-shadowed-variable
+            // this.favdrug.forEach( p => {
+            //   const  content = {
+            //     'id': p['id'],
+            //     'favename': p['favoriteName'],
+            //     'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
+            //   };
+            //   this.itemset.push(content);
+            // })
+            // console.log('dddddd', this.itemset)
           });
         });
       } else {
@@ -262,18 +311,6 @@ export class DoctorprofileComponent implements OnInit {
 
   }
   savedata() {
-     // if (this.itemset.length > 0) {
-     //   this.itemset.forEach( p => {
-     //     if (p['res']) {
-     //       if(p['id'] == this.fav_id) {
-     //         p['res'].forEach( h => {
-     //           this.datafinal.push(h);
-     //         })
-     //       }
-     //     }
-     //
-     //   })
-     // }
     if (this.datafinal.length > 0) {
       this._ser.Add_fav(this.fav_id , this.datafinal).subscribe(res => {
         if (res.success === true) {
@@ -281,16 +318,7 @@ export class DoctorprofileComponent implements OnInit {
           this.show_messeg('اطلاعات با موفقیت ثبت شد' , true);
           this._ser.gae_fav(1).subscribe( h => {
             this.itemset = [];
-            this.favdrug = h['items'];
-            this.favdrug.forEach( p => {
-              console.log('ppppppppp', p['id'])
-              const  content = {
-                'id': p['id'],
-                'favename': p['favoriteName'],
-                'res' : p['jsonValue'] ? JSON.parse(p['jsonValue']) : ''
-              };
-              this.itemset.push(content);
-            })
+             this.pars(h);
           });
         }
       })

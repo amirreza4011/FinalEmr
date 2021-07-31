@@ -53,7 +53,7 @@ export class LaboratoryRequestComponent implements OnInit {
   testName = '';
   myControl = new FormControl();
   serchlist = new Array();
-  listdrug =new Array();
+  listdrug = new Array();
   name: any = [];
   value = '';
   messg: any;
@@ -71,12 +71,13 @@ export class LaboratoryRequestComponent implements OnInit {
     hospital = ''
 
    customerobj: any;
-  private labfav:  Array<any> = [];
+   labfav:  Array<any> = [];
     messgshow: any;
     messag: any;
      temp: any;
      idm: any;
      list_lab_master = new Array();
+     reslab: any;
   constructor(
       private modalService: NgbModal,
       private _labReq: LabReqService,
@@ -135,8 +136,9 @@ export class LaboratoryRequestComponent implements OnInit {
         return str;
     };
     ngOnInit() {
-        this.list_lab_master=null;
-        this.listdrug=null;
+
+        this.list_lab_master = null;
+        this.listdrug = null;
        this.get_list_lab();
 
        this._serviceh.getAll().subscribe(res => {
@@ -176,17 +178,17 @@ export class LaboratoryRequestComponent implements OnInit {
 
   }
   get_list_lab() {
-        if(this.i.config.lab_type == 'L'){
+        if (this.i.config.lab_type == 'L') {
               this._labReq.getlistitem('1').subscribe((res) => {
-                  this.list_lab_master=null;
+                  this.list_lab_master = null;
                 this.listdrug = res;
                   this.getlist_lab();
             });
-        }else {
+        } else {
             this._labReq.get_list_lab_bymaster().subscribe( result => {
-                this.listdrug=null;
+                this.listdrug = null;
                 this.list_lab_master = result;
-                // this.getlist_lab();
+                this.getlist_lab();
             })
         }
   }
@@ -246,9 +248,8 @@ export class LaboratoryRequestComponent implements OnInit {
   }
 
   set(d: any) {
-this.printOK = true
-
-
+     this.printOK = true
+      console.log(d);
       const  data = {
           'masterServiceID': d['masterServiceID'],
           'orderTemplateID': d['orderTemplateID'],
@@ -258,18 +259,13 @@ this.printOK = true
           'national_code' : d['masterService_NationalCode'],
           'displayName' : d['displayName'],
           'loinc_code': d['loinC_Code']
-
-
       };
       this.add_item_to_list(data);
-
-
   }
   save() {
     if (this.datafinal.length > 0) {
       this.loading = true;
         this._labReq.insertlab(this.datafinal, this.dateObject1, this.SendData).subscribe(p => {
-          console.log('newwwww test', p)
         this.result = p;
           this.loading = false;
         if (p['success'] == true) {
@@ -347,17 +343,41 @@ Get_Last_History_Of_Observation(name: any) {
 
   }
 
-    setdrug(item: any, event: any) {
-
+  setdrug(item: any, event: any) {
+      this.printOK = true
         const  h = JSON.parse(item);
-         h.forEach( p => {
-            this.add_item_to_list(p);
+        console.log('h:', h)
+         h.forEach( d => {
+             if (this.i.config.lab_type == 'M'){
+                 const  data = {
+                     'masterServiceID': d['masterServiceID'],
+                     'orderTemplateID': d['orderTemplateID'],
+                     'qty': '1',
+                     'priorityIX': '0',
+                     'name': d['name'],
+                     'national_code' : d['masterService_NationalCode'],
+                     'displayName' : d['name'],
+                     'loinc_code': d['masterServiceID']
+                 };
+                 this.add_item_to_list(data);
+             } else {
+                 const  data = {
+                     'masterServiceID': d['masterServiceID'],
+                     'orderTemplateID': d['orderTemplateID'],
+                     'qty': '1',
+                     'priorityIX': '0',
+                     'name': d['name'],
+                     'national_code' : d['masterService_NationalCode'],
+                     'displayName' : d['name'],
+                     'loinc_code': d['masterServiceID']
+                 };
+                 this.add_item_to_list(data);
+             }
+           
          })
 
 
     }
-
-
 
     saveedit() {
 
@@ -370,26 +390,24 @@ Get_Last_History_Of_Observation(name: any) {
             'requestDate': '',
             'expiryDate': this.dateObject1,
             'rayavaran_ServiceRequest_Status': '1',
-            'web_API_Service_Requset_Items': this.datafinal
+            'web_API_Service_Requset_Items': this.SendData
 
         }
 
         this._labReq.Update_Laboratory_Order(data).subscribe( p => {
+            this.result = p;
             this.datafinal = [];
             this.data_get = [];
-            console.log('pppp:', p);
-            // this._labReq.Get_Laboratory_Order_Encounter(this.customerobj['currentEncounterLocationID']).subscribe( p => {
-            //     this.data_get = p;
-            //     this.show_messeg('بروزرسانی داده با موفقیت انجام شد', true)
-            //     this.datafinal = [];
-            //     this.data_get['items'].forEach( u => {
-            //         this.status = u['statusIS'];
-            //         const  y = JSON.parse(u['jsonValue']);
-            //         y.forEach( h => {
-            //             this.datafinal.push(h);
-            //         })
-            //     })
-            // });
+            if (p['success'] == true) {
+                this.get_list_lab()
+                this.printValid = true;
+                this.datafinal = [];
+                this.value = '';
+                this.SendData = [];
+                this.printValid = true;
+            } else {
+
+            }
         });
     }
 
@@ -408,11 +426,20 @@ Get_Last_History_Of_Observation(name: any) {
          const persons =  this.datafinal.find(x => x.displayName == item['displayName']);
         // tslint:disable-next-line:triple-equals
         if (!persons) {
+            if (this.i.config.lab_type == 'L') {
                 const OBJ = new Web_API_Service_Requset_Items;
                     OBJ.qty = '1',
                     OBJ.service_Terminology_ID = '13',
                     OBJ.service_Code = item['loinc_code']
                 this.SendData.push(OBJ)
+            } else {
+                const OBJ = new Web_API_Service_Requset_Items;
+                OBJ.qty = '1',
+                    OBJ.service_Terminology_ID = '14',
+                    OBJ.service_Code = item['masterServiceID']
+                this.SendData.push(OBJ)
+            }
+
             this.datafinal.push(item);
             console.log(this.datafinal)
             this.serchlist = null;
@@ -427,8 +454,11 @@ Get_Last_History_Of_Observation(name: any) {
             document.getElementById('test').focus();
         }
     }
-  async  getlist_lab() {
-   await    this._labReq.getlab_byenconter().subscribe( p => {
+    getlist_lab() {
+
+       this._labReq.getlab_byenconter().subscribe( p => {
+
+           this.reslab = p;
            let g = p;
            this.temp = p;
            if (p['success']) {
@@ -440,11 +470,29 @@ Get_Last_History_Of_Observation(name: any) {
                       if (u['rayavaran_Loinc_Class_Code'] == '1') {
                           this.status = u['rayavaran_ServiceRequest_Status'];
                           u.web_API_Service_Requset_Item_Views.forEach( h => {
-
-                              const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
+                               console.log('h is:', h)
+                              const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'], 'service_Terminology_ID': h['service_Terminology_ID'], 'service_Code': h['service_Code']}
                               this.datafinal.push(content);
                               this.data = content;
                           })
+                          if(this.datafinal){
+                              this.datafinal.forEach( k => {
+                                  console.log('k:',k)
+                                  if (this.i.config.lab_type == 'L') {
+                                      const OBJ = new Web_API_Service_Requset_Items;
+                                      OBJ.qty = '1',
+                                          OBJ.service_Terminology_ID = '13',
+                                          OBJ.service_Code = k['service_Code']
+                                      this.SendData.push(OBJ)
+                                  } else {
+                                      const OBJ = new Web_API_Service_Requset_Items;
+                                      OBJ.qty = '1',
+                                          OBJ.service_Terminology_ID = '14',
+                                          OBJ.service_Code = k['service_Code']
+                                      this.SendData.push(OBJ)
+                                  }
+                              })
+                          }
                       }
                   })
               }
