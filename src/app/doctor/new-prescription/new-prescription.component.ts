@@ -19,8 +19,9 @@ import {HospitalService} from '../../services/hospital/hospital.service';
   styleUrls: ['./new-prescription.component.scss']
 })
 export class NewPrescriptionComponent implements OnInit {
+    routearray=[]
     hospital: any;
-
+    myIndex:number
     printValid = false
    generic: any;
    historydrougenconter: any;
@@ -66,6 +67,7 @@ export class NewPrescriptionComponent implements OnInit {
   DurationText = '';
   dispenseText = '';
   route1 = '';
+  routeid= '';
   listItem: any;
   title = '';
   favariteList: [];
@@ -107,6 +109,8 @@ export class NewPrescriptionComponent implements OnInit {
     show_id: any;
     prac_name: any;
    // سازنده کلاس
+    sepas_id: any;
+
     constructor(
       private router: Router,
       private route: ActivatedRoute,
@@ -195,7 +199,11 @@ export class NewPrescriptionComponent implements OnInit {
                     const g = JSON.parse(l['jsonValue']);
 
                     g.forEach( k => {
+                        // if ( k['Duration']==='nullnull'){
+                        //     k['Duration'] = ""
+                        // }
                         this.listItem.push(k)
+                        console.log("qwqwqwqwqwqwqwq",this.listItem)
 
                     })
                 })
@@ -290,7 +298,7 @@ export class NewPrescriptionComponent implements OnInit {
       'Directions' : [''],
       'generic_Code' : [''],
       'erX_Code' : [''],
-        'sepas_id' : ['']
+      'sepas_id' : ['']
     })
     this.listItem = [];
 
@@ -390,7 +398,9 @@ export class NewPrescriptionComponent implements OnInit {
   getFrequency(value: any) {
     const s = value.split('-', 2);
     this.frequncyid = s[0];
+    console.log(this.frequncyid)
     this.Frequency = s[1];
+      console.log(this.Frequency)
       document.getElementById('dosep').focus();
   }
   getDose(value: any) {
@@ -405,6 +415,7 @@ export class NewPrescriptionComponent implements OnInit {
   }
   getDuration(value: any) {
     this.Duration = value;
+      console.log("duration",this.Duration);
   }
   getDispense(value: any) {
     const s = value.split('-', 2);
@@ -412,7 +423,15 @@ export class NewPrescriptionComponent implements OnInit {
     this.Dispense = value;
   }
   getRoute(value: any) {
-    this.route1 = value;
+        console.log(value)
+     this.route1 = value;
+     const s = value.split('-', 2);
+     console.log(s)
+     this.routeid = s[0];
+      console.log(this.routeid)
+      this.route = s[1];
+      console.log(this.route)
+    //    document.getElementById('').focus();
   }
   sendsepas() {
         this.load=true;
@@ -547,6 +566,57 @@ export class NewPrescriptionComponent implements OnInit {
           this.salamatcode =  p['resMessage4mth'];
       });
   }
+    applyeditform(){
+        console.log(this.signupForm.value)
+        this.listItem.splice(this.myIndex, 1)
+        this.printValid = true
+        let frquncusplit;
+        let TNO;
+        let route;
+        if (this.signupForm.value.Frequency) {
+            frquncusplit = this.signupForm.value.Frequency.split('-', 2);
+
+        }
+        if (this.signupForm.value.TNOselect) {
+            TNO = this.signupForm.value.TNOselect.split('-', 2);
+        }
+        if (this.signupForm.value.Route) {
+            route = this.signupForm.value.Route.split('-', 2);
+
+
+        }
+        const content = {
+
+            'drugname': this.signupForm.value['drugname'],
+            'drugid': this.signupForm.value['drugid'],
+            'fullfrequncy': this.signupForm.value['Frequency'],
+            // 'Frequency': frquncusplit ? frquncusplit[1] : '',
+
+            'Frequency': this.Frequency,
+            // 'Frequencyid': frquncusplit ? frquncusplit[0] : '',
+            'Frequencyid': this.frequncyid,
+            'doseText': this.signupForm.value.Dosetext + '' + this.signupForm.value.Doseselect,
+            'dosesel' : this.signupForm.value.Doseselect,
+            'dosetxt' : this.signupForm.value.Dosetext,
+            'qualifier': this.signupForm.value['qualifier'],
+            'Administration': this.signupForm.value['Administration'],
+            'Duration': this.signupForm.value['Durationtext'] + '' + this.signupForm.value['Durationselect'],
+            'Durationname': this.signupForm.value['Durationtext'],
+            'Durationsel':  this.signupForm.value['Durationselect'],
+            'T.No': this.signupForm.value['TNOtext'] ,
+            'Tnomberid': TNO ? TNO[0] : '',
+            'tid_text': TNO ? TNO[1] : '',
+            'Direction': this.signupForm.value['Directions'],
+            // 'route': route ? route[1] : '' ,
+             'route': this.route ,
+             'routeid': this.routeid,
+               'qty' : 0
+        };
+      this.listItem.push(content)
+      this.modalService.dismissAll()
+        this.signupForm.reset()
+        this.editrecord=false
+    }
   onSubmit() {
     console.log('form data : ', this.signupForm.value);
       this.printValid = true
@@ -600,18 +670,58 @@ export class NewPrescriptionComponent implements OnInit {
           'routeid': route ? route[0] : '',
           'qty' : formdata['TNOtext']
         };
+        if(content.Duration==='nullnull'){
+            content.Duration=""
+        }
+        console.log('gggg',content)
         this.add_item_to_list(content);
-      this.modalService.dismissAll();
-
+        this.modalService.dismissAll()
   }
   findIndexToUpdate(newItem) {
     return newItem.id === this;
   }
-  edit(i: any , content: any ) {
+  edit(i: any , content: any,index:number ) {
+      this.myIndex = index
+      // this.listItem.splice(index,1)
+      // console.log(this.listItem)
+      this.frequncyid= i['Frequencyid']
+      this.Frequency=i['Frequency']
+      this.signupForm.get('Frequency').setValue(i['Frequency'])
+      this.signupForm.get('Frequency').clearValidators();
+      this.signupForm.get('Frequency').updateValueAndValidity()
+      // this.signupForm.value.Dosetext= i['dosetxt']
+      this.signupForm.get('Dosetext').setValue(i['dosetxt'])
+      this.signupForm.get('Dosetext').updateValueAndValidity()
+      console.log(this.signupForm.value.Dosetext)
+      this.signupForm.get('Doseselect').setValue(i['dosesel'])
+      this.signupForm.get('Doseselect').updateValueAndValidity()
+
+
+
+      this.signupForm.get('Route').setValue(i['route']+"-"+i['routeid'])
+      this.routeid=i['routeid']
+      this.route=i['route']
+
+      this.signupForm.get('Route').updateValueAndValidity()
+      this.signupForm.get('qualifier').setValue(i['qualifier'])
+      this.signupForm.get('qualifier').updateValueAndValidity()
+      this.signupForm.get('Administration').setValue(i['Administration'])
+      this.signupForm.get('Administration').updateValueAndValidity()
+      this.signupForm.get('TNOtext').setValue(i['T.No'])
+      this.signupForm.get('TNOtext').clearValidators();
+      this.signupForm.get('TNOtext').updateValueAndValidity()
+      this.signupForm.get('TNOselect').setValue(i['Tnomberid'])
+      this.signupForm.get('TNOselect').updateValueAndValidity()
+
+      this.signupForm.get('Durationtext').setValue(i['Durationname'])
+      this.signupForm.get('Durationtext').updateValueAndValidity()
+      this.signupForm.get('Durationselect').setValue(i['Durationsel'])
+      this.signupForm.get('Durationselect').updateValueAndValidity()
+
+
       this.editrecord = i;
           this.modalService.open(content, { size: 'lg' }).result.then((result) => {
           }, (reason) => {
-
           });
           this.typemodal = 3;
 
@@ -668,6 +778,8 @@ export class NewPrescriptionComponent implements OnInit {
           'patientInstruction': e['Frequency'] + e['doseText']
       };
       this.datafinal.push(d);
+      console.log(d)
+        this.editrecord=false
     });
 
       const  content = {
@@ -676,7 +788,6 @@ export class NewPrescriptionComponent implements OnInit {
         'wardRequestItems': this.datafinal,
         'jsonValue': JSON.stringify(this.listItem)
       }
-      // console.log('connnnnn', content)
      this._service.save_edite_drug(content).subscribe( j => {
 
          if (j['success']) {
@@ -690,6 +801,7 @@ export class NewPrescriptionComponent implements OnInit {
              this.show_messeg(j['trackingNumber'], true)
          }
      })
+      this.editrecord=false
   }
     setPrint(){
   localStorage.setItem('x','1')
@@ -697,11 +809,11 @@ export class NewPrescriptionComponent implements OnInit {
 
         }
   add_item_to_list(item: any) {
-
+console.log(item)
       if (this.editrecord) {
-          this.listItem.splice(item, 1);
+          // this.listItem.splice(item, 1);
          // this.re = this.editrecord['Frequency'];
-          this.editrecord = null;
+         this.editrecord = null;
       }
           this._salamatservice.sendToTamin(item['drugid']).subscribe(p => {
               this.messg = p;
@@ -726,7 +838,6 @@ export class NewPrescriptionComponent implements OnInit {
 
           if (!persons) {
               if (persons_d || persons_d_e) {
-
                   this.listItem.push(item);
                   document.getElementById('namedrug').focus();
                   this.show = 'none';
@@ -749,6 +860,7 @@ export class NewPrescriptionComponent implements OnInit {
               this.signupForm.reset();
               this.show_messeg('داروی تکراری یافت شد' , true)
           }
+
 
 
   }
