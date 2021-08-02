@@ -6,6 +6,7 @@ import {PatientListServiceService} from '../../services/patient-list-service.ser
 import { LocalStorageService } from '../../sevices/local-storage.service.service';
 import {SalamatserviceService} from '../../services/salamatservice.service';
 import {ApiconfigserviceService} from '../../service/apiconfigservice.service';
+import {usetToken} from '../../service/UsetTokenResult';
 
 @Component({
   selector: 'app-home-page',
@@ -27,6 +28,7 @@ export class HomePageComponent implements OnInit {
      salamaterror: any;
      resMessage4mth: any;
      issalamat: boolean;
+     ditas: usetToken;
   constructor(
           private router: Router,
           private  _salamatservice: SalamatserviceService,
@@ -60,7 +62,7 @@ export class HomePageComponent implements OnInit {
 
   }
  async  ngOnInit() {
-      this.mozmenlist=[];
+      this.mozmenlist = [];
      this._service.getdetailpation(localStorage.getItem('encounterID')).subscribe(p => {
          const cust = {
              'id': 1,
@@ -70,19 +72,27 @@ export class HomePageComponent implements OnInit {
          this.customersService.add(cust);
      });
       this.issalamat = this.i.config.salamt_api;
-    this._salamatservice.getsalamtusertoken(localStorage.getItem('salamattoken')).subscribe( p => {
-      localStorage.setItem('salamatusertoken', p['resMessage4mth']);
-      this._salamatservice.getcitizentoken(localStorage.getItem('salamattoken'), p['resMessage4mth'], this.customerobj['patient_NationalCode']).subscribe(u => {
-        localStorage.setItem('citizentoken', u['resMessage4mth']);
-        this._salamatservice.getsamadcode(localStorage.getItem('salamattoken'), p['resMessage4mth'], u['resMessage4mth']).subscribe(o => {
-          localStorage.setItem('samadcode', o['resMessage4mth'])
-            this.salamaterror = JSON.parse(o['resMessage']);
-          this.resMessage4mth = o['resMessage4mth'];
+     this._salamatservice.Ditas_token().subscribe( res => {
+         if (res.access_token) {
+             this._salamatservice.getsalamtusertoken(localStorage.getItem('salamattoken'), res.access_token).subscribe( p => {
+                 this.ditas = p;
+                 if (p.result.data.info.sessionId) {
+                     localStorage.setItem('salamatusertoken', p.result.data.info.sessionId );
+                     // this._salamatservice.getcitizentoken(localStorage.getItem('salamattoken'), p['resMessage4mth'], this.customerobj['patient_NationalCode']).subscribe(u => {
+                     //   localStorage.setItem('citizentoken', u['resMessage4mth']);
+                     // tslint:disable-next-line:max-line-length
+                     //   this._salamatservice.getsamadcode(localStorage.getItem('salamattoken'), p['resMessage4mth'], u['resMessage4mth']).subscribe(o => {
+                     //     localStorage.setItem('samadcode', o['resMessage4mth'])
+                     //       this.salamaterror = JSON.parse(o['resMessage']);
+                     //     this.resMessage4mth = o['resMessage4mth'];
+                     //
+                     //   });
+                     // })
+                 }
+             });
+         }
+     })
 
-        });
-
-      })
-    });
      // this.getdata();
     const  g = await this.subs.add(this.customersService.stateChanged.subscribe(state => {
 
@@ -109,18 +119,18 @@ export class HomePageComponent implements OnInit {
   }
 
   get_citizen_user() {
-      this._salamatservice.getsalamtusertoken(localStorage.getItem('salamattoken')).subscribe( p => {
-          localStorage.setItem('salamatusertoken', p['resMessage4mth']);
-          this._salamatservice.getcitizentoken(localStorage.getItem('salamattoken'), p['resMessage4mth'], this.customerobj['patient_NationalCode']).subscribe(u => {
-              localStorage.setItem('citizentoken', u['resMessage4mth']);
-              this._salamatservice.getsamadcode(localStorage.getItem('salamattoken'), p['resMessage4mth'], u['resMessage4mth']).subscribe(o => {
-                  localStorage.setItem('samadcode', o['resMessage4mth'])
-                  this.salamaterror = o['resMessage'];
-                  this.resMessage4mth = o['resMessage4mth'];
-              });
-
-          })
-      });
+      // this._salamatservice.getsalamtusertoken(localStorage.getItem('salamattoken')).subscribe( p => {
+      //     localStorage.setItem('salamatusertoken', p['resMessage4mth']);
+      //     this._salamatservice.getcitizentoken(localStorage.getItem('salamattoken'), p['resMessage4mth'], this.customerobj['patient_NationalCode']).subscribe(u => {
+      //         localStorage.setItem('citizentoken', u['resMessage4mth']);
+      //         this._salamatservice.getsamadcode(localStorage.getItem('salamattoken'), p['resMessage4mth'], u['resMessage4mth']).subscribe(o => {
+      //             localStorage.setItem('samadcode', o['resMessage4mth'])
+      //             this.salamaterror = o['resMessage'];
+      //             this.resMessage4mth = o['resMessage4mth'];
+      //         });
+      //
+      //     })
+      // });
   }
  // async getdata() {
  //   const userAccess = await  this._service.getdetailpation(this.encounterId).subscribe(p => {

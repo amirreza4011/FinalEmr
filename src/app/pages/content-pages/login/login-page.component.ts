@@ -39,7 +39,7 @@ export class LoginPageComponent {
 
     // tslint:disable-next-line:use-lifecycle-interface
     ngOnInit() {
-        this.version=this.i.config.version;
+        this.version = this.i.config.version;
         localStorage.clear();
         localStorage.removeItem('conf');
         localStorage.removeItem('page');
@@ -74,10 +74,18 @@ export class LoginPageComponent {
         this._service.doctor(this.userName, this.password).subscribe(res => {
             localStorage.setItem('token', res.accessToken);
             if (res.accessToken.length > 0) {
-                this._salamatservice.getsalamatagenttoken().subscribe( p => {
-                   localStorage.setItem('salamattoken', p['resMessage4mth'])
-                })
-                 this.router.navigate(['/DoctorDashboard/patientList']);
+                 this._salamatservice.Ditas_token().subscribe( p => {
+                     localStorage.setItem('ditas_token', p.access_token)
+                     if (p.access_token) {
+                         this._salamatservice.getsalamatagenttoken(p.access_token).subscribe( p => {
+                             if (p.result.data.info.token) {
+                                 localStorage.setItem('salamattoken', p.result.data.info.token)
+                             }
+
+                         })
+                     }
+                 })
+                  this.router.navigate(['/DoctorDashboard/patientList']);
             } else {
               this.errorMassage = res.errorMessage
             }
