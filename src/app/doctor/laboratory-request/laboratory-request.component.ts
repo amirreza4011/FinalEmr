@@ -78,6 +78,7 @@ export class LaboratoryRequestComponent implements OnInit {
      idm: any;
      list_lab_master = new Array();
      reslab: any;
+     laball: any;
   constructor(
       private modalService: NgbModal,
       private _labReq: LabReqService,
@@ -106,14 +107,34 @@ export class LaboratoryRequestComponent implements OnInit {
     }, (reason) => {
     });
     this._labReq.getlabfav().subscribe(p => {
+        this.laball=p;
       this.result1 = p['items'];
       this.labfav = [];
       this.result1.forEach(e => {
-        const content1 = {
-          'id': e['id'],
-          'res' : JSON.parse(e['jsonValue'])
-        };
-        this.labfav.push(content1);
+          const  g= JSON.parse(e['jsonValue']);
+          if(this.i.config.lab_type=='M'){
+              this.list_lab_master['item'].forEach( b =>{
+                  if(g['displayName']==b['displayName']){
+                      const content1 = {
+                          'id': e['id'],
+                          'res' : JSON.parse(e['jsonValue'])
+                      };
+                      this.labfav.push(content1);
+                  }
+              })
+          }else {
+              this.listdrug['items'].forEach( b =>{
+                  if(g['displayName']==b['displayName']){
+                      const content1 = {
+                          'id': e['id'],
+                          'res' : JSON.parse(e['jsonValue'])
+                      };
+                      this.labfav.push(content1);
+                  }
+              })
+          }
+
+
       })
     });
   }
@@ -158,7 +179,7 @@ export class LaboratoryRequestComponent implements OnInit {
 
      this._ser.gae_fav(1).subscribe( h => {
          this.favdrug = h['items'];
-         console.log(h);
+         console.log('fav list:', h);
      })
 
 
@@ -321,11 +342,28 @@ Get_Last_History_Of_Observation(name: any) {
       this.result1 = p['items'];
       this.labfav = [];
       this.result1.forEach(e => {
-        const content1 = {
-          'id': e['id'],
-          'res' : JSON.parse(e['jsonValue'])
-        };
-        this.labfav.push(content1);
+          const  g= JSON.parse(e['jsonValue']);
+          if(this.i.config.lab_type=='M'){
+              this.list_lab_master['item'].forEach( b =>{
+                  if(g['displayName']==b['displayName']){
+                      const content1 = {
+                          'id': e['id'],
+                          'res' : JSON.parse(e['jsonValue'])
+                      };
+                      this.labfav.push(content1);
+                  }
+              })
+          }else {
+              this.listdrug['items'].forEach( b =>{
+                  if(g['displayName']==b['displayName']){
+                      const content1 = {
+                          'id': e['id'],
+                          'res' : JSON.parse(e['jsonValue'])
+                      };
+                      this.labfav.push(content1);
+                  }
+              })
+          }
       })
     });
   })

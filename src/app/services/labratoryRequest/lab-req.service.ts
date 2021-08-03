@@ -69,6 +69,7 @@ export class LabReqService {
 
     const data = {
       'rayavaran_Loinc_Class_Code': '1',
+      
       'encounterID': localStorage.getItem('encounterID'),
       'expiryDate': date.toString(),
       'jsonvalue': JSON.stringify(list),
@@ -85,10 +86,11 @@ export class LabReqService {
       headers: headerDict
     })
   }
-  tasvirbardari(list: any, date: any, SendData: any, type: any): Observable <any> {
+  tasvirbardari(list: any, date: any, SendData: any , type: any): Observable <any> {
 
     const data = {
       'rayavaran_Loinc_Class_Code': '2',
+      'rayavaran_Loinc_Method_Code': type,
       'encounterID': localStorage.getItem('encounterID'),
       'expiryDate': '1400-12-20',
       'jsonvalue': JSON.stringify(list),

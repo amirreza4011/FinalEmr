@@ -1,14 +1,14 @@
 {
-   "API_URL": "http://rw80:900",
+  "API_URL": "http://rw80:900",
   "packs_url" : "http://192.168.125.11/metric/hisintegration.aspx?Id=",
   "login_default" : "d_login",
-  "drug_mode" : "S" ,
+  "drug_mode" : "E" ,
   "sepas_url" : "http://192.168.78.1/rwsepas02/api/Prescription/getInsertSimplePrescription",
   "salamat_url" : "https://localhost:44325",
   "salamt_api" : true,
   "version": "1400-04-20-1",
-   "packsdata": "p",
-    "lab_type": "M"
+  "packsdata": "p",
+  "lab_type": "L"
 }
 
 

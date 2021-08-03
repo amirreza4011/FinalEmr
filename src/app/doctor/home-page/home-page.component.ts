@@ -102,6 +102,7 @@ export class HomePageComponent implements OnInit {
 
         if (this.customerobj) {
           this._service.chronicdruglist(this.customerobj['patientID']).subscribe(p => {
+              this.mozmenlist=[];
             this.resultmozmen = p['items'];
             this.resultmozmen.forEach(e => {
               const content = {
