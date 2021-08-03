@@ -15,7 +15,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-  
         this.subscription = this.router.events
             .pipe(
                 filter(event => event instanceof NavigationEnd)

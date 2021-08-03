@@ -614,8 +614,8 @@ export class NewPrescriptionComponent implements OnInit {
         };
       this.listItem.push(content)
       this.modalService.dismissAll()
-        this.signupForm.reset()
-        this.editrecord=false
+       this.signupForm.reset()
+      this.editrecord=false
     }
   onSubmit() {
     console.log('form data : ', this.signupForm.value);

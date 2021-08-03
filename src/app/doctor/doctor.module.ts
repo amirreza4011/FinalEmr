@@ -41,6 +41,7 @@ import {NgxPrintModule} from 'ngx-print';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { CreateuserComponent } from './createuser/createuser.component';
+import {MatSortModule} from '@angular/material/sort';
 
 
 @NgModule({
@@ -66,10 +67,8 @@ import { CreateuserComponent } from './createuser/createuser.component';
         MatIconModule,
         MatProgressSpinnerModule,
         MatExpansionModule,
-
-
+        MatSortModule
 
     ]
-
 })
 export class DoctorModule { }
