@@ -3,13 +3,18 @@ import namedata from '../../assets/config/config.json';
 import {HttpClient} from '@angular/common/http';
 import {ConfigurationService} from './Config/configuration.service';
 import {ApiconfigserviceService} from '../service/apiconfigservice.service';
+import {isObservable} from 'rxjs/internal-compatibility';
+import {Observable} from 'rxjs/observable';
+import {Ditasresult} from '../service/Ditasresult';
+import {usetToken} from '../service/UsetTokenResult';
+import {ditastoken} from '../service/tokenditasresult';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SalamatserviceService {
   basurl: string;
-  private urlagenttoken =     '/Agent_gettoken';
+  private urlagenttoken =     '/Agent_gettoken?token=';
   private userurltoken =      '/Get_usertoken?id=';
   private citizenurl =        '/citizen_gettoken';
   private samadcode =         '/samad_code';
@@ -17,6 +22,7 @@ export class SalamatserviceService {
   private detailnosurldrug =  '/get_detail_noskhe_drug';
   private save =              '/save_service';
   private sendTOTAminUrl = '/sernd_presc_drug?erx='
+  private gettokenditas_url =              '/gettoken';
 
   constructor(private http: HttpClient,
               private _Config: ConfigurationService,
@@ -24,6 +30,9 @@ export class SalamatserviceService {
 
   ) {
 
+  }
+  seturl(url: any) {
+    this.basurl = url;
   }
   sendToTamin(erx) {
 
@@ -41,16 +50,13 @@ export class SalamatserviceService {
     return   this.http.get<any>(this.basurl +  this.sendTOTAminUrl + erx, {
      // headers: headerDict
     });
-
-
-
-
   }
-  seturl(url: any) {
-    this.basurl = url;
+  Ditas_token(): Observable<ditastoken> {
+    return   this.http.get<ditastoken>(this.basurl +  this.gettokenditas_url );
   }
+
   // agent api
-  getsalamatagenttoken( ) {
+  getsalamatagenttoken(token: any ) {
 
     const data = {
       'terminalId': 192604,
@@ -63,19 +69,20 @@ export class SalamatserviceService {
     const requestOptions = {
       headers: new Headers(headerDict),
     };
-    return   this.http.get<any>(this.basurl +  this.urlagenttoken, {
+    return   this.http.get<Ditasresult>(this.basurl +  this.urlagenttoken + token, {
       headers: headerDict
     });
 
 
   }
   // user api
-  getsalamtusertoken( id: any) {
+  getsalamtusertoken( id: any, ditastoke: any): Observable<usetToken> {
 
     const data = {
         'id': localStorage.getItem('salamattoken'),
         'username': localStorage.getItem('user'),
-        'password': localStorage.getItem('pass')
+        'password': localStorage.getItem('pass'),
+        'ditastoken': ditastoke
     };
 
     const body = JSON.stringify(data );
@@ -92,7 +99,7 @@ export class SalamatserviceService {
     const requestOptions = {
       headers: new Headers(headerDict),
     };
-    return   this.http.post<any>(this.basurl + this.userurltoken , body , {
+    return   this.http.post<usetToken>(this.basurl + this.userurltoken , body , {
       headers: headerDict
     });
 
@@ -124,7 +131,7 @@ export class SalamatserviceService {
 
 
   }
-  getsamadcode(token: any , sessionsid: any , citizenid: string ) {
+  getsamadcode(token: any , sessionsid: any , citizenid: string ){
 
     const data = {
 
@@ -216,7 +223,7 @@ export class SalamatserviceService {
 
 
   }
-  save_no(token: any , sessionsid: any , citizenid: string , samad: string, item: any) {
+  save_no(token: any , sessionsid: any , citizenid: string , samad: string, item: any){
 
     const data = {
 

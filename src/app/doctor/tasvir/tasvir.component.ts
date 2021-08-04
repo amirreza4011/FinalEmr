@@ -16,12 +16,13 @@ import {HospitalService} from '../../services/hospital/hospital.service';
   styleUrls: ['./tasvir.component.css']
 })
 export class TasvirComponent implements OnInit {
-  printOK=false
+  printOK = false
    mess: any;
   data_get: any;
   status: any
    status_ta: string;
    idm: any;
+  messgshow: any;
    data: { priorityIX: string; displayName: any; qty: string };
 
   persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g]
@@ -49,6 +50,7 @@ export class TasvirComponent implements OnInit {
   show: boolean;
   datafinal:  Array<any> = [];
   listserves: [];
+  messag: any;
   historylab: any;
   testnameList = '';
   result: any;
@@ -56,9 +58,10 @@ export class TasvirComponent implements OnInit {
   result1: any;
   detail: any;
   loading: boolean;
-  hospital=""
+  hospital = ''
    customerobj: any;
   private labfav:  Array<any> = [];
+   count = 0;
   constructor(
       private modalService: NgbModal,
       private _labReq: LabReqService,
@@ -86,11 +89,17 @@ export class TasvirComponent implements OnInit {
       this.result1 = p['items'];
       this.labfav = [];
       this.result1.forEach(e => {
-        const content1 = {
-          'id': e['id'],
-          'res' : JSON.parse(e['jsonValue'])
-        };
-        this.labfav.push(content1);
+        const  g = JSON.parse(e['jsonValue']);
+          this.listdrug['items'].forEach( b => {
+            if (g['displayName'] == b['displayName']) {
+              const content1 = {
+                'id': e['id'],
+                'res' : JSON.parse(e['jsonValue'])
+              };
+              this.labfav.push(content1);
+            }
+          })
+
       })
     });
   }
@@ -176,49 +185,24 @@ export class TasvirComponent implements OnInit {
 
 
   }
-
+  show_messeg(mess: any, sh: boolean) {
+    this.messgshow = sh;
+    this.messag = mess;
+  }
   set(d: any) {
-    this.printOK=true
-
-    console.log('dddd', d)
-    this.loinC_Code.push(d['loinC_Code'])
-    for (const i of this.loinC_Code) {
-      const OBJ = new Web_API_Service_Requset_Items;
-      OBJ.qty = '2',
-          OBJ.service_Terminology_ID = '13',
-          OBJ.service_Code = i
-      this.SendData.push(OBJ)
-      console.log(this.SendData)
-    }
-    let chek = false;
-    this.datafinal.forEach( p => {
-      if (p['name'] === d['name']) {
-        chek = true;
-      }
-    })
-
-      // tslint:disable-next-line:max-line-length
-      this._salamatservice.getdetailtest(localStorage.getItem('salamattoken'), localStorage.getItem('salamatusertoken'), localStorage.getItem('citizentoken'), localStorage.getItem('samadcode'), d['masterService_NationalCode']).subscribe(p => {
-        this.mess = p;
-      });
-      const  data = {
-        'masterServiceID': d['masterServiceID'],
-        'orderTemplateID': d['orderTemplateID'],
-        'qty': '1',
-        'priorityIX': '0',
-        'name': d['name'],
-        'national_code' : d['masterService_NationalCode'],
-        'displayName' : d['displayName']
-      };
-      // tslint:disable-next-line:max-line-length
-      this._salamatservice.getdetailtest(localStorage.getItem('salamattoken'), localStorage.getItem('salamatusertoken'), localStorage.getItem('citizentoken'), localStorage.getItem('samadcode'), data['national_code']).subscribe(p => {
-        this.messg = p['resMessage'];
-      });
-      this.datafinal.push(data);
-      this.labform.reset();
-      this.serchlist = null;
-      document.getElementById('test').focus();
-      chek = false;
+    this.printOK = true
+    console.log(d);
+    const  data = {
+      'masterServiceID': d['masterServiceID'],
+      'orderTemplateID': d['orderTemplateID'],
+      'qty': '1',
+      'priorityIX': '0',
+      'name': d['name'],
+      'national_code' : d['masterService_NationalCode'],
+      'displayName' : d['displayName'],
+      'loinc_code': d['loinC_Code']
+    };
+    this.add_item_to_list(data);
 
 
 
@@ -231,9 +215,9 @@ export class TasvirComponent implements OnInit {
     if (this.datafinal.length > 0) {
       this.loading = true;
       console.log(this.datafinal)
-      this._labReq.tasvirbardari(this.datafinal, this.dateObject1, this.SendData, 2).subscribe(p => {
+      this._labReq.tasvirbardari(this.datafinal, this.dateObject1, this.SendData, this.status_ta).subscribe(p => {
         this.getlist_lab();
-        this.SendData=[]
+       // this.SendData = []
         this.result = p;
         console.log(p);
         this.loading = false;
@@ -283,11 +267,16 @@ export class TasvirComponent implements OnInit {
         this.result1 = p['items'];
         this.labfav = [];
         this.result1.forEach(e => {
-          const content1 = {
-            'id': e['id'],
-            'res' : JSON.parse(e['jsonValue'])
-          };
-          this.labfav.push(content1);
+          const  g = JSON.parse(e['jsonValue']);
+          this.listdrug['items'].forEach( b => {
+            if (g['displayName'] == b['displayName']) {
+              const content1 = {
+                'id': e['id'],
+                'res' : JSON.parse(e['jsonValue'])
+              };
+              this.labfav.push(content1);
+            }
+          })
         })
       });
     })
@@ -310,26 +299,44 @@ export class TasvirComponent implements OnInit {
   }
 
   setstatus(id: number ) {
+    this.datafinal = [];
+    this.count = 0;
+    this.result = null;
+    this.SendData = [];
     if (id == 1) {
     this.status_ta = '2.1';
+    this.datafinal = [];
+    this.getlist_lab();
     }
     if (id == 2) {
       this.status_ta = '2.2';
+      this.datafinal = [];
+      this.getlist_lab();
     }
     if (id == 3) {
       this.status_ta = '2.4';
+      this.datafinal = [];
+      this.getlist_lab();
     }
     if (id == 4) {
       this.status_ta = '2.3';
+      this.datafinal = [];
+      this.getlist_lab();
     }
     if (id == 5) {
       this.status_ta = '2.5';
+      this.datafinal = [];
+      this.getlist_lab();
     }
     if (id == 6) {
       this.status_ta = '2.6';
+      this.datafinal = [];
+      this.getlist_lab();
     }
     if (id == 7) {
       this.status_ta = '2.7';
+      this.datafinal = [];
+      this.getlist_lab();
     }
   }
   getlist_body_system(code: any) {
@@ -354,10 +361,10 @@ export class TasvirComponent implements OnInit {
           g.forEach( u => {
 
             this.idm = u['id'];
-            if (u['rayavaran_Loinc_Class_Code'] == '2') {
+            if (u['rayavaran_Loinc_Class_Code'] == '2' && u['rayavaran_Loinc_Method_Code'] == this.status_ta) {
               this.status = u['rayavaran_ServiceRequest_Status'];
               u.web_API_Service_Requset_Item_Views.forEach( h => {
-
+                this.count = 1;
                 const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
                 this.datafinal.push(content);
                 this.data = content;
@@ -369,5 +376,66 @@ export class TasvirComponent implements OnInit {
       }
     })
   }
+  closem() {
+    this.messgshow = false;
+    document.getElementById('test').focus();
+  }
+  saveedit() {
 
+    const data = {
+      'id': this.idm,
+      'rayavaran_Loinc_Class_Code': '2',
+      'jsonValue': JSON.stringify(this.datafinal),
+      'practitionerID': '',
+      'encounterID': localStorage.getItem('encounterID'),
+      'requestDate': '',
+      'expiryDate': this.dateObject1,
+      'rayavaran_ServiceRequest_Status': '1',
+      'web_API_Service_Requset_Items': this.SendData
+    }
+
+    this._labReq.Update_Laboratory_Order(data).subscribe( p => {
+      this.result = p;
+      this.datafinal = [];
+      this.data_get = [];
+      if (p['success'] == true) {
+        this.printValid = true;
+        this.datafinal = [];
+        this.value = '';
+        // this.SendData = [];
+        this.printValid = true;
+        this.getlist_lab();
+      } else {
+
+      }
+    });
+  }
+  add_item_to_list(item: any) {
+    // this._salamatservice.getdetailtest(localStorage.getItem('salamattoken'), localStorage.getItem('salamatusertoken'), localStorage.getItem('citizentoken'), localStorage.getItem('samadcode'), item['national_code']).subscribe(p => {
+    //   this.messg = p['resMessage'];
+    // });
+    const persons =  this.datafinal.find(x => x.displayName == item['displayName']);
+    // tslint:disable-next-line:triple-equals
+    if (!persons) {
+
+        const OBJ = new Web_API_Service_Requset_Items;
+        OBJ.qty = '1',
+            OBJ.service_Terminology_ID = '13',
+            OBJ.service_Code = item['loinc_code']
+        this.SendData.push(OBJ)
+
+
+      this.datafinal.push(item);
+      console.log(this.datafinal)
+      this.serchlist = null;
+      this.labform.reset();
+      document.getElementById('test').focus();
+    } else {
+      this.show_messeg('آزمایش تکراری یافت شد' , true);
+      this.serchlist = null;
+      // this.serchresult = [];
+      this.labform.reset();
+      document.getElementById('test').focus();
+    }
+  }
 }

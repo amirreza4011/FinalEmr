@@ -192,11 +192,12 @@
                   <table class="table table-bordered table-hover" style="text-align: center">
                       <tbody style="cursor: pointer">
                       <tr style="background-color: #117A65;color: white">
-                          <th>
-                              #
-                          </th>
+
                           <th>
                               نام خدمت
+                          </th>
+                          <th>
+                              توضيحات
                           </th>
                           <th>
                             نوع
@@ -210,11 +211,17 @@
                           </th>
                       </tr>
                       <tr  *ngFor="let item of datafinal;let i=index">
-                          <td>
-                              {{i+1}}
-                          </td>
+
                           <td (click)="Get_Last_History_Of_Observation(item['name'])" scope="row" class="hover" >
                               {{item['displayName']}}
+
+                          </td>
+                          <td>
+                              <textarea style="
+    text-align: right;
+    width: 100%;
+    line-height: 19px;padding: 4px" name="Text1" cols="20" rows="3"></textarea>
+
 
                           </td>
                           <td style="cursor: pointer;color:#f2911b" class="text-center" >
@@ -242,8 +249,8 @@
               </div>
 
             </div>
-            <button *ngIf="!status" class="btn btn-warning " (click)="save()" style="background-color: #f2911b !important;color: white !important;margin-left: 30px;margin-top: 6px"   > ثبت و ارسال(سپاس)<i class="ft-save"></i> </button>
-            <button *ngIf="status" class="btn btn-warning "  style="background-color: #f2911b !important;color: white !important;margin-left: 30px;margin-top: 6px"   > ثبت تغییرات<i class="ft-save"></i> </button>
+            <button *ngIf="!status || count<1" class="btn btn-warning " (click)="save()" style="background-color: #f2911b !important;color: white !important;margin-left: 30px;margin-top: 6px"   > ثبت و ارسال(سپاس)<i class="ft-save"></i> </button>
+            <button *ngIf="status && count>0" class="btn btn-warning "  style="background-color: #f2911b !important;color: white !important;margin-left: 30px;margin-top: 6px" (click)="saveedit()"  > ثبت تغییرات<i class="ft-save"></i> </button>
             <button   class="btn btn-primary mt-1 ml-1 loading "  [printStyle]="{div:{'direction':'rtl'}}"   style="background-color: #f2911b!important; color: white!important;border: none"  [useExistingCss]="true" printSectionId="print-section"  ngxPrint> چاپ   <i class="ft-printer"></i> </button>
         </div>
         <div class="col-4 " style="padding: 0!important; margin: 0!important;background-color: white;text-align: center">
@@ -370,7 +377,12 @@
 <div *ngIf="loading" class="col-12" style="text-align: center;margin-top: -15%">
     <img src="assets/img/flags/760.gif" />
 </div>
-
-
+<div *ngIf="messgshow" class="col-3 mess" style="margin: 0 auto;background-color: white;height: 90px;z-index: 200;margin-top: -16%;border: 2px solid darkred;color: black;
+  animation-duration: 4s;">
+    <p>{{messag}}</p>
+    <button class="btn btn-reddit" (click)="closem()" >
+        <i class="ft-alert-circle" style="color: orangered"></i>   متوجه شدم
+    </button>
+</div>
 
 
