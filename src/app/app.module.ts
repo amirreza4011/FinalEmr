@@ -11,9 +11,9 @@ import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DataTablesModule } from 'angular-datatables';
 import {
-  PerfectScrollbarModule,
-  PERFECT_SCROLLBAR_CONFIG,
-  PerfectScrollbarConfigInterface,
+         PerfectScrollbarModule,
+        PERFECT_SCROLLBAR_CONFIG,
+        PerfectScrollbarConfigInterface,
 } from 'ngx-perfect-scrollbar';
 import { AppComponent } from './app.component';
 import { ContentLayoutComponent } from './layouts/content/content-layout.component';

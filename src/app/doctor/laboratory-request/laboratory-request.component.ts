@@ -373,10 +373,7 @@ Get_Last_History_Of_Observation(name: any) {
                  };
                  this.add_item_to_list(data);
              }
-           
          })
-
-
     }
 
     saveedit() {

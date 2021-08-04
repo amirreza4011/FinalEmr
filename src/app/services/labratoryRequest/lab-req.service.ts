@@ -51,6 +51,21 @@ export class LabReqService {
     });
 
   }
+  getlistitem(id: any): Observable <any> {
+    const data = {
+      'rayavaran_Loinc_Class_Code': id.toString(),
+    }
+    const body = JSON.stringify(data );
+    console.log(body)
+    const headerDict = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer  ' + localStorage.getItem('token')
+    }
+    console.log(body);
+    return this.http.post<any>(this.baseurl + this.listservicename, body, {
+      headers: headerDict
+    })
+  }
   favariteList(item: any): Observable <any> {
     const data = {
       'jsonValue': JSON.stringify(item),
@@ -106,21 +121,7 @@ export class LabReqService {
     })
   }
 
-  getlistitem(id: any): Observable <any> {
-    const data = {
-      'rayavaran_Loinc_Class_Code': id.toString(),
-    }
-    const body = JSON.stringify(data );
-    console.log(body)
-    const headerDict = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer  ' + localStorage.getItem('token')
-    }
-    console.log(body);
-    return this.http.post<any>(this.baseurl + this.listservicename, body, {
-      headers: headerDict
-    })
-  }
+
   deletfavlab(id: any): Observable <any> {
     const data = {
       'id': id,

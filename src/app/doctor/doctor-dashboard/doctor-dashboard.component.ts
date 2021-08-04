@@ -8,8 +8,7 @@ import {LocalStorageService} from '../../sevices/local-storage.service.service';
 import {SalamatserviceService} from '../../services/salamatservice.service';
 import {ApiconfigserviceService} from '../../service/apiconfigservice.service';
 import {timeout} from 'rxjs/operators';
-
-
+import moment from 'jalali-moment';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -50,6 +49,8 @@ export class DoctorDashboardComponent implements OnInit {
   val: '123';
   configdata: any;
 
+currentdate:any;
+
   constructor(private router: Router,
               private route: ActivatedRoute,
               private  _service: PatientListServiceService,
@@ -65,6 +66,7 @@ export class DoctorDashboardComponent implements OnInit {
     this.addCustomer();
     if (localStorage.getItem('token') == null) {
       this.router.navigate(['/pages/login']);
+
     }
   }
   setrout(id) {
@@ -92,15 +94,16 @@ export class DoctorDashboardComponent implements OnInit {
       })
     }
 
-
-
   }
   postDatestartdate(event: any) {
-    this.start = event;
-    console.log(this.start)
+    if (event){
+      this.start = event;
+    }
   }
   postDateenddate(event: any) {
-    this.end = event;
+    if (event){
+      this.end = event;
+    }
   }
   postDate(event: any) {
 
@@ -124,8 +127,6 @@ export class DoctorDashboardComponent implements OnInit {
         this.precdetail = res;
         this.listdata = res['outPatients'];
         this.loading = false;
-
-
       })
     }
 
@@ -176,6 +177,10 @@ export class DoctorDashboardComponent implements OnInit {
       this.result = res;
 
     });
+    this.currentdate = moment().locale('fa').format('YYYY/M/D');
+    this.start=this.currentdate;
+    this.end=this.currentdate;
+
   }
   addCustomer() {
     const cust = {
@@ -185,9 +190,5 @@ export class DoctorDashboardComponent implements OnInit {
     };
     this.customersService.add(cust);
   }
-
-    getdata_user_temp(id: any) {
-
-    }
 
 }

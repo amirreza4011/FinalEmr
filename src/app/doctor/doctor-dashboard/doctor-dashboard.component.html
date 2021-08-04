@@ -46,8 +46,8 @@
                             mode="day"
                             name="StartDate"
                             (onChange)="postDatestartdate($event)"
-                            placeholder="تاریخ"
-                            theme="dp-material">
+                            placeholder="{{currentdate}}"
+                            theme="dp-material" >
                     </dp-date-picker>
 
                 </div>
@@ -60,13 +60,10 @@
                             mode="day"
                             name="EndDate"
                             (onChange)="postDateenddate($event)"
-                            placeholder="تاریخ"
-                            theme="dp-material">
+                            placeholder="{{currentdate}}"
+                            theme="dp-material" >
                     </dp-date-picker>
-
-
                 </div>
-
             </div>
             <div class="col-lg-6 col-md-12 col-sm-12  mt-2" style="text-align: right!important;" >
 
