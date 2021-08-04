@@ -4,6 +4,25 @@
 
     opacity: 1!important;
 }
+.table {
+margin-top: 10%;
+}
 
-
-
+.tip {
+    /*display: inline-block;*/
+    border-bottom: 1px dotted black;
+}
+.tooltiptext {
+    visibility: hidden ;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    bottom: 93%;
+    position: fixed;
+    font-size: smaller;
+    opacity: 0.4;
+}
+.tip:hover .tooltiptext {
+    visibility: visible;
+}

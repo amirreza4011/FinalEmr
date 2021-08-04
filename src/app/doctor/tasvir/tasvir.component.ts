@@ -237,6 +237,7 @@ export class TasvirComponent implements OnInit {
         this._labReq.gethistorylab(this.customerobj['patientID'], p['masterServiceID']).subscribe(res => {
           this.historylab = res;
         })
+        console.log('tttt',this.historylab )
       }
     })
   }
