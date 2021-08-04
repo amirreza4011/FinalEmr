@@ -2,20 +2,39 @@
     .gh:hover {
         background-color: #0B486B;
         color: white;
-
+    }
+    .tip {
+        /*display: inline-block;*/
+        border-bottom: 1px dotted black;
+    }
+    .tooltiptext {
+        visibility: hidden ;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        bottom: 95%;
+        position: fixed;
+        font-size: smaller;
+        opacity: 0.4;
+    }
+    .tip:hover .tooltiptext {
+        visibility: visible;
     }
 </style>
-<br>
+
 <div *ngIf="sortedData" class="row">
+
     <div class="col-lg-6 col-sm-12 col-md-12" style="max-height: 600px;overflow-y: scroll;overflow-x: hidden">
-        <table matSort (matSortChange)="sortData($event)" class="table table-bordered table-hover" style="width: 100%;text-align: center">
-            <tr style="
-    background-color: #117A65;
-    color: white;">
+
+        <table matSort  (matSortChange)="sortData($event)" class="table table-bordered table-hover" style="width: 100%;text-align: center">
+            <tr style="  background-color: #117A65;color: white;">
                 <th >#</th>
-                <th mat-sort-header="date" class="hide-arrow">تاریخ نسخه</th>
-                <th mat-sort-header="drname" class="hide-arrow">نام پزشک</th>
-                <th mat-sort-header="prof" class="hide-arrow"> تخصص پزش</th>
+
+                <th mat-sort-header="date" class="hide-arrow tip ">تاریخ نسخه <span class="tooltiptext" >مرتب سازی بر اساس تاریخ</span>
+                </th>
+                <th mat-sort-header="drname" class="hide-arrow tip"><span class="tooltiptext" >مرتب سازی بر اساس نام پزشک</span>نام پزشک</th>
+                <th mat-sort-header="prof" class="hide-arrow tip"> <span class="tooltiptext" >مرتب سازی بر اساس تخصص پزشک</span>تخصص پزشک </th>
                 <th > مشاهده</th>
             </tr>
             <tr class="gh" *ngFor="let item of sortedData,let i=index">
@@ -29,9 +48,7 @@
     </div>
     <div class="col-lg-6 col-sm-12 col-md-12">
         <table class="table table-bordered table-hover" style="width: 100%;text-align: center">
-            <tr style="
-    background-color: #117A65;
-    color: white;">
+            <tr style="background-color: #117A65;  color: white;">
                 <th>
                     #
                 </th>
@@ -65,90 +82,87 @@
         </table>
     </div>
 </div>
+/*<!--<div class="container-fluid">-->*/
+/*<!--    <div *ngIf="listhistory" class="row">-->*/
+/*<!--        <div class="col-lg-6 col-sm-12 col-md-12" style="max-height: 600px;overflow-y: scroll;overflow-x: hidden">-->*/
+/*<!--            <table class="table table-bordered table-hover " id="table" style="width: 100%;text-align: center">-->*/
+/*<!--                <tr style="-->*/
+/*<!--    background-color: #117A65;-->*/
+/*<!--    color: white;">-->*/
+/*<!--                    <th>-->*/
+/*<!--                        #-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                        تاریخ نسخه-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                        نام پزشک-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                        تخصص پزشک-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                        مشاهده-->*/
+/*<!--                    </th>-->*/
+/*<!--                </tr>-->*/
+/*<!--                <tr class="gh" *ngFor="let item of listhistory,let i=index">-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{i+1}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{item['dateof_Persian']}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{item['practitioner_FirstName']+' '+item['practitioner_LastName']}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{item['practitioner_Speciality']}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                         <i (click)="detail(item['prescriptionID'])" title="مشاهده ریز نسخه" style="cursor: pointer;font-size: 20px" class="ft ft-list"></i>-->*/
+/*<!--                    </td>-->*/
+/*<!--                </tr>-->*/
 
+/*<!--            </table>-->*/
+/*<!--        </div>-->*/
+/*<!--        <div class="col-lg-6 col-sm-12 col-md-12">-->*/
+/*<!--            <table class="table table-bordered table-hover" style="width: 100%;text-align: center">-->*/
+/*<!--                <tr style="-->*/
+/*<!--    background-color: #117A65;-->*/
+/*<!--    color: white;">-->*/
+/*<!--                    <th>-->*/
+/*<!--                        #-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                        نام دارو-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                        نحوه مصرف-->*/
+/*<!--                    </th>-->*/
+/*<!--                    <th>-->*/
+/*<!--                         نحوه مصرف-->*/
+/*<!--                    </th>-->*/
 
-<!--<div class="container-fluid">-->
-<!--    <div *ngIf="listhistory" class="row">-->
-<!--        <div class="col-lg-6 col-sm-12 col-md-12" style="max-height: 600px;overflow-y: scroll;overflow-x: hidden">-->
-<!--            <table class="table table-bordered table-hover " id="table" style="width: 100%;text-align: center">-->
-<!--                <tr style="-->
-<!--    background-color: #117A65;-->
-<!--    color: white;">-->
-<!--                    <th>-->
-<!--                        #-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                        تاریخ نسخه-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                        نام پزشک-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                        تخصص پزشک-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                        مشاهده-->
-<!--                    </th>-->
-<!--                </tr>-->
-<!--                <tr class="gh" *ngFor="let item of listhistory,let i=index">-->
-<!--                    <td>-->
-<!--                        {{i+1}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{item['dateof_Persian']}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{item['practitioner_FirstName']+' '+item['practitioner_LastName']}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{item['practitioner_Speciality']}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                         <i (click)="detail(item['prescriptionID'])" title="مشاهده ریز نسخه" style="cursor: pointer;font-size: 20px" class="ft ft-list"></i>-->
-<!--                    </td>-->
-<!--                </tr>-->
+/*<!--                </tr>-->*/
+/*<!--                <tr *ngFor="let item of listhistoryitem,let i=index">-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{i+1}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{item['salableName']}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{item['frequency']}}-->*/
+/*<!--                    </td>-->*/
+/*<!--                    <td>-->*/
+/*<!--                        {{item['routeUsage']}}-->*/
+/*<!--                    </td>-->*/
 
-<!--            </table>-->
-<!--        </div>-->
-<!--        <div class="col-lg-6 col-sm-12 col-md-12">-->
-<!--            <table class="table table-bordered table-hover" style="width: 100%;text-align: center">-->
-<!--                <tr style="-->
-<!--    background-color: #117A65;-->
-<!--    color: white;">-->
-<!--                    <th>-->
-<!--                        #-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                        نام دارو-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                        نحوه مصرف-->
-<!--                    </th>-->
-<!--                    <th>-->
-<!--                         نحوه مصرف-->
-<!--                    </th>-->
+/*<!--                </tr>-->*/
 
-<!--                </tr>-->
-<!--                <tr *ngFor="let item of listhistoryitem,let i=index">-->
-<!--                    <td>-->
-<!--                        {{i+1}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{item['salableName']}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{item['frequency']}}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{item['routeUsage']}}-->
-<!--                    </td>-->
+/*<!--            </table>-->*/
+/*<!--        </div>-->*/
 
-<!--                </tr>-->
+/*<!--    </div>-->*/
 
-<!--            </table>-->
-<!--        </div>-->
-
-<!--    </div>-->
-
-<!--</div>-->
-
+/*<!--</div>-->*/

@@ -19,7 +19,7 @@ export class HistorynosComponent implements OnInit {
   customerobj: any[];
   listhistoryitem: any[];
   sortedData: any[];
-
+  disableThirdHeader = false;
   constructor(private  _service: EmrdrugserviceService,
               private customersService: CustomersService,
               private  i: ApiconfigserviceService
@@ -27,6 +27,8 @@ export class HistorynosComponent implements OnInit {
   ) {        this._service.seturl(this.i.config.API_URL);
   }
   ngOnInit(): void {
+
+
     this.subs.add(this.customersService.stateChanged.subscribe(state => {
       if (state) {
         this.customers = JSON.stringify(state.customer['res']);
@@ -63,7 +65,6 @@ export class HistorynosComponent implements OnInit {
   sortData(sort: Sort) {
 
     const data = this.listhistory.slice();
-
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
     } else {

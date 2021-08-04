@@ -1,4 +1,9 @@
 
 ::ng-deep .hide-arrow .mat-sort-header-arrow {
     color: #fff;
+
+    opacity: 1!important;
 }
+
+
+

@@ -1,9 +1,6 @@
 {
-<<<<<<< HEAD
   "API_URL": "http://rw80:900",
-=======
    "API_URL": "http://rw80:900",
->>>>>>> 2fe9399bfc4fdca1ae7d049368fbd6b5d4b65fe4
   "packs_url" : "http://192.168.125.11/metric/hisintegration.aspx?Id=",
   "login_default" : "d_login",
   "drug_mode" : "E" ,
