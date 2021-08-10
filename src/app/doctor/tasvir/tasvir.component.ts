@@ -9,6 +9,7 @@ import {SalamatserviceService} from '../../services/salamatservice.service';
 import {ApiconfigserviceService} from '../../service/apiconfigservice.service';
 import {Web_API_Service_Requset_Items} from '../../classes/web_API_Service_Requset_Items';
 import {HospitalService} from '../../services/hospital/hospital.service';
+import {compose} from '@ngxs/store/operators';
 
 @Component({
   selector: 'app-tasvir',
@@ -85,7 +86,7 @@ export class TasvirComponent implements OnInit {
     this.modalService.open(content, { size: 'sm' }).result.then((result) => {
     }, (reason) => {
     });
-    this._labReq.getlabfav().subscribe(p => {
+      this._labReq.getlabfav().subscribe(p => {
       this.result1 = p['items'];
       this.labfav = [];
       this.result1.forEach(e => {
@@ -363,8 +364,8 @@ export class TasvirComponent implements OnInit {
 
             this.idm = u['id'];
             if (u['rayavaran_Loinc_Class_Code'] == '2' && u['rayavaran_Loinc_Method_Code'] == this.status_ta) {
-              this.status = u['rayavaran_ServiceRequest_Status'];
-              u.web_API_Service_Requset_Item_Views.forEach( h => {
+                this.status = u['rayavaran_ServiceRequest_Status'];
+                u.web_API_Service_Requset_Item_Views.forEach( h => {
                 this.count = 1;
                 const content =  { 'qty': '1', 'priorityIX': '0', 'displayName': h['service_DisplayName'] }
                 this.datafinal.push(content);

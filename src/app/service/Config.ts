@@ -7,7 +7,8 @@ export  class Config {
     salamat_url: any;
     salamt_api: boolean;
     version: string;
-    packsdata:string;
-    lab_type:string
+    packsdata: string;
+    lab_type: string;
+    iscomission:number;
 
 }

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PrescriptionServicesService} from '../../services/prescription-services.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
@@ -18,7 +18,8 @@ import {HospitalService} from '../../services/hospital/hospital.service';
   templateUrl: './new-prescription.component.html',
   styleUrls: ['./new-prescription.component.scss']
 })
-export class NewPrescriptionComponent implements OnInit {
+export class NewPrescriptionComponent implements OnInit  {
+
     routearray=[]
     hospital: any;
     myIndex:number
@@ -94,6 +95,7 @@ export class NewPrescriptionComponent implements OnInit {
    messg: any;
    drug_mode: any;
    erX_Code: any;
+
    favtemplist:  Array<any> = [];
    checked: any;
    url: any;
@@ -110,6 +112,7 @@ export class NewPrescriptionComponent implements OnInit {
     prac_name: any;
    // سازنده کلاس
     sepas_id: any;
+    comission:number
 
     constructor(
       private router: Router,
@@ -124,6 +127,9 @@ export class NewPrescriptionComponent implements OnInit {
       private _ser: ProfileseviceService,
       private  _servicemozmen: PatientListServiceService,
       private _serviceh: HospitalService,
+
+
+
 
               ) {
     this._service.setMyGV(this.i.config.API_URL);
@@ -149,6 +155,107 @@ export class NewPrescriptionComponent implements OnInit {
     this._service.getpac().subscribe(p => {
       this.paclist = p;
     });
+  }
+
+
+  async  ngOnInit() {
+
+        this._serviceh.getAll().subscribe(res => {
+            this.hospital = res.hospitalName
+        });
+        this.prac_name = localStorage.getItem('doc_name')
+        this.getdata();
+        // document.getElementById('namedrug').focus();
+        this.cheklist = [];
+        this.typemodal = 1;
+        this.messgshow = false;
+
+      this._service.getService().subscribe( res => {
+      this.liststore = res;
+      res.forEach(p => {
+        if (p.iS_Default_Pharmacy === true) {
+          this.id1 = p.id;
+          this.defultdrugstore = p.name;
+        }
+
+      });
+
+     this._service.getdruglist(this.id1).subscribe( res => {
+        this.listdrug = res;
+
+      })
+    });
+
+      this._ser.gae_fav(2).subscribe( h => {
+      this.favdrug = h['items'];
+    })
+     this.getlistdrug_byenconter();
+
+      this._service.getFavList().subscribe( res => {
+      this.favariteList = res['items'];
+      this.favariteList.forEach(p => {
+        const content1 = {
+          'id': p['id'],
+          'res': JSON.parse(p['jsonValue'])
+        };
+        this.favlist.push(content1);
+      })
+    });
+    this.config = localStorage.getItem('conf');
+
+    this.subs.add(this.customersService.stateChanged.subscribe(state => {
+      if (state) {
+        this.customers = JSON.stringify(state.customer['res']);
+        this.customerobj = JSON.parse(this.customers);
+      }
+    }));
+    if (this.customerobj) {
+    try {
+     //     this._servicemozmen.chronicdruglist(this.customerobj['patientID']).subscribe(p => {
+     //     this.resultmozmen = p['items'];
+     //     this.resultmozmen.forEach(e => {
+     //         const content = {
+     //             'id': e['id'],
+     //             'res' : JSON.parse(e['jsonValue'])
+     //         };
+     //         this.mozmenlist.push(content);
+     //
+     //     })
+     // });
+ } catch (e) {
+   console.log('mess', e.toString());
+
+ }
+    }
+      this.signupForm = this.fb.group({
+      'drugname': ['', Validators.required ],
+      'Frequency': ['', Validators.required ],
+      'drugid': new FormControl(null),
+      'Dosetext': ['', Validators.required ],
+      'Doseselect': ['', Validators.required ],
+      'TNOtext': ['', Validators.required ],
+      'TNOselect': ['', Validators.required ],
+      'Route' : ['0-  '],
+      'qualifier': [''],
+      'Administration' : [''],
+      'Durationtext' : [''],
+      'Durationselect' : [''],
+      'Directions' : [''],
+      'generic_Code' : [''],
+      'erX_Code' : [''],
+      'sepas_id' : ['']
+    })
+    this.listItem = [];
+
+      this._service.geterxdrug().subscribe( res => {
+        this.listdrugerx = res['items'];
+      })
+    this._service.routelist().subscribe(p => {
+      this.listroute = p;
+    });
+    this._service.frequncylist().subscribe(p => {
+      this.listfrequncy = p;
+    })
   }
     // کلید بالا و پایین
 
@@ -197,127 +304,11 @@ export class NewPrescriptionComponent implements OnInit {
                 h['items'].forEach( l => {
                     this.historydrougenconter = JSON.parse(l['jsonValue'])
                     const g = JSON.parse(l['jsonValue']);
-
-                    g.forEach( k => {
-                        // if ( k['Duration']==='nullnull'){
-                        //     k['Duration'] = ""
-                        // }
-                        this.listItem.push(k)
-                        console.log("qwqwqwqwqwqwqwq",this.listItem)
-
-                    })
+                    console.log('gggg',g)
                 })
             }
         });
     }
-
-  async  ngOnInit() {
-
-
-        this._serviceh.getAll().subscribe(res => {
-            this.hospital = res.hospitalName
-        });
-        this.prac_name = localStorage.getItem('doc_name')
-        this.getdata();
-        // document.getElementById('namedrug').focus();
-        this.cheklist = [];
-        this.typemodal = 1;
-        this.messgshow = false;
-        this._service.getService().subscribe( res => {
-      this.liststore = res;
-      res.forEach(p => {
-        if (p.iS_Default_Pharmacy === true) {
-          this.id1 = p.id;
-          this.defultdrugstore = p.name;
-        }
-
-      });
-
-     this._service.getdruglist(this.id1).subscribe( res => {
-        this.listdrug = res;
-
-      })
-
-    });
-
-        this._ser.gae_fav(2).subscribe( h => {
-      this.favdrug = h['items'];
-      console.log(h);
-    })
-        this.getlistdrug_byenconter();
-
-    this._service.getFavList().subscribe( res => {
-      this.favariteList = res['items'];
-      this.favariteList.forEach(p => {
-        const content1 = {
-          'id': p['id'],
-          'res': JSON.parse(p['jsonValue'])
-        };
-        this.favlist.push(content1);
-      })
-    });
-    this.config = localStorage.getItem('conf');
-
-    this.subs.add(this.customersService.stateChanged.subscribe(state => {
-      if (state) {
-        this.customers = JSON.stringify(state.customer['res']);
-        this.customerobj = JSON.parse(this.customers);
-      }
-    }));
-    if (this.customerobj) {
-    try {
-     this._servicemozmen.chronicdruglist(this.customerobj['patientID']).subscribe(p => {
-         this.resultmozmen = p['items'];
-         this.resultmozmen.forEach(e => {
-             const content = {
-                 'id': e['id'],
-                 'res' : JSON.parse(e['jsonValue'])
-             };
-             this.mozmenlist.push(content);
-         })
-     });
- } catch (e) {
-   console.log('mess', e.toString());
-
- }
-
-    }
-    this.signupForm = this.fb.group({
-      'drugname': ['', Validators.required ],
-      'Frequency': ['', Validators.required ],
-      'drugid': new FormControl(null),
-      'Dosetext': ['', Validators.required ],
-      'Doseselect': ['', Validators.required ],
-      'TNOtext': ['', Validators.required ],
-        'TNOselect': ['', Validators.required ],
-      'Route' : ['0-  '],
-      'qualifier': [''],
-      'Administration' : [''],
-      'Durationtext' : [''],
-      'Durationselect' : [''],
-      'Directions' : [''],
-      'generic_Code' : [''],
-      'erX_Code' : [''],
-      'sepas_id' : ['']
-    })
-    this.listItem = [];
-
-
-
-
-      this._service.geterxdrug().subscribe( res => {
-        this.listdrugerx = res['items'];
-      })
-
-
-
-    this._service.routelist().subscribe(p => {
-      this.listroute = p;
-    });
-    this._service.frequncylist().subscribe(p => {
-      this.listfrequncy = p;
-    })
-  }
   read() {
     this.show = 'yes';
   }
@@ -325,8 +316,10 @@ export class NewPrescriptionComponent implements OnInit {
 
     this.show = 'none';
   }
+
   onSearchChange(event: any) {
 
+      this.comission = this.i.config.iscomission;
       // tslint:disable-next-line:triple-equals
    if (this.i.config.drug_mode == 'S' && this.termin_saleble_id == 6) {
        const key = event.target.value;
@@ -339,15 +332,13 @@ export class NewPrescriptionComponent implements OnInit {
            }
            // tslint:disable-next-line:triple-equals
            if (key != '' ) {
-               // console.log('keyyyyyyyyyyy',key);
                const f = item.name ?  item.name.toLowerCase().substring(0, key.length) : '';
                if (key === f) {
                    // tslint:disable-next-line:max-line-length
-                   this.serchlist.push({'name': item.name, 'id': item.id, 'iscomisin': item.isCommission, 'qty': item.storage_Qty})
+                   this.serchlist.push({'name': item.name, 'id': item.id, 'iscomisin': item.isCommission, 'qty': item.storage_Qty, 'drugGroupIx': item.drugGroupIX })
                    // serch = true;
-
+                   }
                }
-           }
        });
    }
       // tslint:disable-next-line:triple-equals
@@ -362,29 +353,30 @@ export class NewPrescriptionComponent implements OnInit {
               }
               // tslint:disable-next-line:triple-equals
               if (key != '' ) {
-                  // console.log('keyyyyyyyyyyy',key);
                   const f = item.value ?  item.value.toLowerCase().substring(0, key.length) : '';
                   if (key === f) {
                       if (this.chek_brand == true) {
                           // tslint:disable-next-line:triple-equals
                           if (item.isBrand == true) {
                               // tslint:disable-next-line:max-line-length
-                              this.serchlist.push({'name': item.value, 'id': item.code, 'iscomisin': false, 'qty': 1000})
+                              this.serchlist.push({'name': item.value, 'id': item.code, 'iscomisin': false, 'qty': 1000, 'drugGroupIx': item.drugGroupIX})
                               // serch = true;
                           }
                       } else {
                           // tslint:disable-next-line:max-line-length
-                          this.serchlist.push({'name': item.value, 'id': item.code, 'iscomisin': false, 'qty': 1000})
+                          this.serchlist.push({'name': item.value, 'id': item.code, 'iscomisin': false, 'qty': 1000, 'drugGroupIx': item.drugGroupIX })
                           // serch = true;
                       }
-
                   }
               }
           });
       }
   }
+
   set(d: any , content: any) {
+        console.log(d)
       this.typemodal = 3;
+
       this.modalService.open(content, { size: 'lg' }).result.then((result) => {
       }, (reason) => {
 
@@ -393,14 +385,16 @@ export class NewPrescriptionComponent implements OnInit {
     this.drugid = d['id'];
     this.generic = d['generic_Code'];
     this.erX_Code = d['erX_Code'];
+
     this.serchlist = [];
+
+
   }
   getFrequency(value: any) {
     const s = value.split('-', 2);
     this.frequncyid = s[0];
-    console.log(this.frequncyid)
     this.Frequency = s[1];
-      console.log(this.Frequency)
+
       document.getElementById('dosep').focus();
   }
   getDose(value: any) {
@@ -423,19 +417,19 @@ export class NewPrescriptionComponent implements OnInit {
     this.Dispense = value;
   }
   getRoute(value: any) {
-        console.log(value)
+     console.log(value)
      this.route1 = value;
      const s = value.split('-', 2);
      console.log(s)
      this.routeid = s[0];
-      console.log(this.routeid)
-      this.route = s[1];
-      console.log(this.route)
+     console.log(this.routeid)
+     this.route = s[1];
+     console.log(this.route)
     //    document.getElementById('').focus();
   }
   sendsepas() {
         this.load=true;
-      this.listItem.forEach(e => {
+        this.listItem.forEach(e => {
           const  d = {
               'Drug_eRxCode': e['drugid'],
               'Drug_TotalNumberValue': e['qty'].toString(),
@@ -473,15 +467,15 @@ export class NewPrescriptionComponent implements OnInit {
       this.datafinal.push(d);
     });
     if (this.datafinal.length > 0) {
-        this.sendsepas();
+      this.sendsepas();
       this.load = true;
       this._service.inserdruglist(this.listItem, this.datafinal, this.customerobj['currentLocationID'] , this.pharmacy).subscribe(res => {
-        this.listItem = res;
-        console.log('res:', res);
+      this.listItem = res;
+      console.log('res:', res);
         this.load = false;
         this.datafinal = [];
         if (res['success'] == true) {
-            this.printValid = true;
+          this.printValid = true;
           this.listItem = [];
           this.value = '';
           this.ressenddata = 'yes';
@@ -496,7 +490,7 @@ export class NewPrescriptionComponent implements OnInit {
 
   }
   GetDetails(content) {
-      this.typemodal = 1;
+    this.typemodal = 1;
     this.favlist = [];
     this.modalService.open(content, { size: 'lg' }).result.then((result) => {
     }, (reason) => {
@@ -695,9 +689,6 @@ export class NewPrescriptionComponent implements OnInit {
       console.log(this.signupForm.value.Dosetext)
       this.signupForm.get('Doseselect').setValue(i['dosesel'])
       this.signupForm.get('Doseselect').updateValueAndValidity()
-
-
-
       this.signupForm.get('Route').setValue(i['route']+"-"+i['routeid'])
       this.routeid=i['routeid']
       this.route=i['route']
@@ -778,7 +769,6 @@ export class NewPrescriptionComponent implements OnInit {
           'patientInstruction': e['Frequency'] + e['doseText']
       };
       this.datafinal.push(d);
-      console.log(d)
         this.editrecord=false
     });
 

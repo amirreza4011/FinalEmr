@@ -42,11 +42,13 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { CreateuserComponent } from './createuser/createuser.component';
 import {MatSortModule} from '@angular/material/sort';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 
 @NgModule({
   // tslint:disable-next-line:max-line-length
-  declarations: [DoctorDashboardComponent, PrescriptionComponent, PatientInfoComponent, MedicaionsComponent, LaboratoryRequestComponent, DrugRecordComponent, LabRecordComponent, DrugOrderComponent, FilterPipe, SearchPipe, NewPrescriptionComponent, HomePageComponent, ShowResultTableComponent, WaitngPageComponent, RadiologyorderComponent, TasvirComponent, OtherComponent, HistorynosComponent, HistorytestComponent, HistoryobservationComponent, DoctorprofileComponent, AddDrugNosComponent, CreateuserComponent],
+  declarations: [DoctorDashboardComponent, PrescriptionComponent, PatientInfoComponent, MedicaionsComponent, LaboratoryRequestComponent, DrugRecordComponent, LabRecordComponent, DrugOrderComponent, FilterPipe, SearchPipe, NewPrescriptionComponent, HomePageComponent, ShowResultTableComponent, WaitngPageComponent, RadiologyorderComponent, TasvirComponent, OtherComponent, HistorynosComponent, HistorytestComponent, HistoryobservationComponent, DoctorprofileComponent, AddDrugNosComponent, CreateuserComponent, SidebarComponent],
     imports: [
         NgxPrintModule,
         CommonModule,
@@ -67,7 +69,8 @@ import {MatSortModule} from '@angular/material/sort';
         MatIconModule,
         MatProgressSpinnerModule,
         MatExpansionModule,
-        MatSortModule
+        MatSortModule,
+        MatSidenavModule
 
     ]
 })

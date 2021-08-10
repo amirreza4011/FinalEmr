@@ -117,7 +117,7 @@ export class LabReqService {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer  ' + localStorage.getItem('token')
     }
-    console.log(body);
+
     return this.http.post<any>(this.baseurl + this.saveurl, body, {
       headers: headerDict
     })
